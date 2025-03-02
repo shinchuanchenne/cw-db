@@ -1,5 +1,4 @@
 package edu.uob;
-
 import java.io.*;
 import java.net.ServerSocket;
 import java.net.Socket;
@@ -42,16 +41,15 @@ public class DBServer {
         // TODO implement your server logic here
         //1.1 Analysing Comment
         //1.1 Standarise lowercase and delete space
-        command = command.toLowerCase().trim();
+        command = command.trim();
 
         //1.4 Check ends with ;
         if (!command.endsWith(";")) {
             return "[ERROR] Invalid command syntax.";
         }
-
         //1.3 Generate a switch to set logic
         String[] words = command.split(" ");
-        String keyword = words[0];
+        String keyword = words[0].toLowerCase();
         switch (keyword) {
             case "use":
                 return useDatabase(command);
@@ -59,7 +57,6 @@ public class DBServer {
             case "create":
                 return create(command);
         }
-
         return "[ERROR] Unknown command: " + command;
     }
 
@@ -69,7 +66,7 @@ public class DBServer {
     private String useDatabase(String command){
         String databaseName = command.substring(4).trim().replace(";","");
         //1.2 Check whether databases/mydatabases is exist?
-        File dbFolder = new File("databases/" + databaseName);
+        File dbFolder = new File("databases" + File.separator + databaseName);
         if (dbFolder.exists()) {
             //1.2 set current database = databaseName
             currentDatabase = databaseName;
@@ -88,10 +85,7 @@ public class DBServer {
         if (word.length < 2) {
             return "[ERROR] Invalid CREATE command";
         }
-        //1.3 Check too many parameter.
-        if (word.length > 3){
-            return "[ERROR] Invalid CREATE command";
-        }
+
         String secondWord = word[1];
         // 1.3 To see the second word is Database or Table.
         switch (secondWord) {
@@ -109,7 +103,7 @@ public class DBServer {
         String[] word = command.toLowerCase().trim().split(" ");
         String databaseName = word[2].trim().replace(";","");
 
-        File dbFolder = new File("databases/" + databaseName);
+        File dbFolder = new File("databases" + File.separator + databaseName);
         if (!dbFolder.exists()) {
             //1.4 create a database folder
             dbFolder.mkdirs();
@@ -125,22 +119,22 @@ public class DBServer {
         if (currentDatabase == null) {
             return "[ERROR] You must define a database first";
         }
-        //1.5
-        String[] word = command.toLowerCase().trim().split(" ");
+        //1.5 Separate (Make sure that Attribute will not lowercase)
+        String[] word = command.trim().split(" ");
 
-        //1.5 get table name
+        //1.5a get table name
         if (word.length == 3) {
-            // 1.5 type: create table student;
+            // 1.5a type: create table student;
             String tableName = word[2].trim().replace(";","").concat(".tab");
-            File tabFile = new File("databases/" + currentDatabase + "/" + tableName);
-            // 1.5 If .tab file (table) is not exist, create a .tab
+            File tabFile = new File("databases" + File.separator + currentDatabase + File.separator + tableName);
+            // 1.5a If .tab file (table) is not exist, create a .tab
             if (!tabFile.exists()) {
                 try {
                     tabFile.createNewFile();
                 } catch (IOException ioe) {
                     return "[ERROR] Failed to create table";
                 }
-                //1.5 create id in the first row
+                //1.5a create id in the first row
                 try(FileWriter writer = new FileWriter(tabFile)){
                     writer.write("id\n");
                     writer.flush();
@@ -148,16 +142,46 @@ public class DBServer {
                     return "[ERROR] Failed to write table id";
                 }
                 return "[OK]";
+            } else {
+                return "[ERROR] Table already exists";
             }
 
         } else if (word.length > 3) {
-            // 1.5 type: create table student(name, age, email);
+            // 1.5b type: create table student(name, age, email);
+            // 1.5b Identify table name and attribute name
+            String tableName = word[2].trim().concat(".tab");
+            // 1.5b Find location of ( and )
+            int startIndex = command.indexOf("(");
+            int endIndex = command.indexOf(")");
+            // 1.5b Catch attributes
+            String attributes = command.substring(startIndex + 1, endIndex).trim();
+            String[] attributeList = attributes.split(",");
+
+            //1.5b Check whether table is existed?
+            File tabFile = new File("databases" + File.separator + currentDatabase + File.separator + tableName);
+            // 1.5b If .tab file (table) is not exist, create a .tab
+            if (!tabFile.exists()) {
+                try {
+                    tabFile.createNewFile();
+                } catch (IOException ioe) {
+                    return "[ERROR] Failed to create table";
+                }
+                //1.5b create id in the first row, then create attributes
+                try(FileWriter writer = new FileWriter(tabFile)){
+                    String header = "id\t" + String.join("\t", attributeList) + "\n";
+                    writer.write(header);
+                    writer.flush();
+                } catch (IOException ioe) {
+                    return "[ERROR] Failed to write table id";
+                }
+                return "[OK]";
+            } else {
+                return "[ERROR] Table already exists";
+            }
 
         } else {
             return "[ERROR] Invalid CREATE command";
         }
-
-        return "";
     }
 
 
