@@ -49,6 +49,11 @@ public class DBServer {
         //1.1 Standarise lowercase and delete space
         command = command.toLowerCase().trim();
 
+        //1.4 Check ends with ;
+        if (!command.endsWith(";")) {
+            return "[ERROR] Invalid command syntax.";
+        }
+
         //1.3 Generate a switch to set logic
         String[] words = command.split(" ");
         String keyword = words[0];
@@ -57,7 +62,7 @@ public class DBServer {
                 return useDatabase(command);
 
             case "create":
-                return createTable(command);
+                return create(command);
         }
 
         return "[ERROR] Unknown command: " + command;
@@ -79,9 +84,48 @@ public class DBServer {
         }
     }
 
-    //1.3 Writing Create table
-    private String createTable(String command) {
+    //1.3 Writing CREATE
+    private String create(String command) {
+        //1.3 Standarise words after CREATE
+        String[] word = command.toLowerCase().trim().split(" ");
 
+        //1.3 Check no parameter.
+        if (word.length < 2) {
+            return "[ERROR] Invalid CREATE command";
+        }
+        //1.3 Check too many parameter.
+        if (word.length > 3){
+            return "[ERROR] Invalid CREATE command";
+        }
+        String secondWord = word[1];
+        // 1.3 To see the second word is Database or Table.
+        switch (secondWord) {
+            case "database":
+                return createDatabase(command);
+            case "table":
+                return createTable(command);
+            default:
+                return "[ERROR] Invalid CREATE command";
+        }
+    }
+    //1.4 Writing Create Database
+    private String createDatabase(String command) {
+        //1.4
+        String[] word = command.toLowerCase().trim().split(" ");
+        String databaseName = word[2].trim().replace(";","");
+
+        File dbFolder = new File("databases/" + databaseName);
+        if (!dbFolder.exists()) {
+            //1.4 create a database folder
+            dbFolder.mkdirs();
+            return "[OK]";
+        } else {
+            //1.4 return database has exists
+            return "[ERROR] Database already exists";
+        }
+    }
+    //1.5 Writing Create Table
+    private String createTable(String command) {
         return "";
     }
 
