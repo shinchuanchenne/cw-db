@@ -1,11 +1,6 @@
 package edu.uob;
 
-import java.io.BufferedReader;
-import java.io.BufferedWriter;
-import java.io.File;
-import java.io.IOException;
-import java.io.InputStreamReader;
-import java.io.OutputStreamWriter;
+import java.io.*;
 import java.net.ServerSocket;
 import java.net.Socket;
 import java.nio.file.Paths;
@@ -126,6 +121,42 @@ public class DBServer {
     }
     //1.5 Writing Create Table
     private String createTable(String command) {
+        //1.5 Check current Database is set or not.
+        if (currentDatabase == null) {
+            return "[ERROR] You must define a database first";
+        }
+        //1.5
+        String[] word = command.toLowerCase().trim().split(" ");
+
+        //1.5 get table name
+        if (word.length == 3) {
+            // 1.5 type: create table student;
+            String tableName = word[2].trim().replace(";","").concat(".tab");
+            File tabFile = new File("databases/" + currentDatabase + "/" + tableName);
+            // 1.5 If .tab file (table) is not exist, create a .tab
+            if (!tabFile.exists()) {
+                try {
+                    tabFile.createNewFile();
+                } catch (IOException ioe) {
+                    return "[ERROR] Failed to create table";
+                }
+                //1.5 create id in the first row
+                try(FileWriter writer = new FileWriter(tabFile)){
+                    writer.write("id\n");
+                    writer.flush();
+                } catch (IOException ioe) {
+                    return "[ERROR] Failed to write table id";
+                }
+                return "[OK]";
+            }
+
+        } else if (word.length > 3) {
+            // 1.5 type: create table student(name, age, email);
+
+        } else {
+            return "[ERROR] Invalid CREATE command";
+        }
+
         return "";
     }
 
