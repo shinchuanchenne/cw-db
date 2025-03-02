@@ -42,18 +42,32 @@ public class DBServer {
     * <p>This method handles all incoming DB commands and carries out the required actions.
     */
 
-    // 1.2 Record current database name
-    private String currentDatabase;
 
     public String handleCommand(String command) {
         // TODO implement your server logic here
         //1.1 Analysing Comment
         //1.1 Standarise lowercase and delete space
         command = command.toLowerCase().trim();
-        //1.1 Only take words after USE ; and delete ;
-        command = command.substring(4).trim().replace(";","");
-        String databaseName = command; //1.2 Storage command result to databasename
 
+        //1.3 Generate a switch to set logic
+        String[] words = command.split(" ");
+        String keyword = words[0];
+        switch (keyword) {
+            case "use":
+                return useDatabase(command);
+
+            case "create":
+                return createTable(command);
+        }
+
+        return "[ERROR] Unknown command: " + command;
+    }
+
+    // 1.2 Writing USE
+    // 1.2 Record current database name
+    private String currentDatabase;
+    private String useDatabase(String command){
+        String databaseName = command.substring(4).trim().replace(";","");
         //1.2 Check whether databases/mydatabases is exist?
         File dbFolder = new File("databases/" + databaseName);
         if (dbFolder.exists()) {
@@ -64,6 +78,13 @@ public class DBServer {
             return "[ERROR] Database not found";
         }
     }
+
+    //1.3 Writing Create table
+    private String createTable(String command) {
+
+        return "";
+    }
+
 
     //  === Methods below handle networking aspects of the project - you will not need to change these ! ===
 
