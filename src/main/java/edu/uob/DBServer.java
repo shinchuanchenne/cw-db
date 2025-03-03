@@ -120,6 +120,12 @@ public class DBServer {
             return "[ERROR] You must define a database first";
         }
         //1.5 Separate (Make sure that Attribute will not lowercase)
+
+        //1.5b <FIX> if there's ( in the command, make sure add space so that tableName( will not convent into a space.
+        if (command.contains("(")){
+            command = command.replace("(", " (");
+        }
+
         String[] word = command.trim().split(" ");
 
         //1.5a get table name
