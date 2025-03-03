@@ -4,6 +4,9 @@ import java.net.ServerSocket;
 import java.net.Socket;
 import java.nio.file.Paths;
 import java.nio.file.Files;
+import java.util.Arrays;
+import java.util.List;
+import java.util.ArrayList;
 
 /** This class implements the DB server. */
 public class DBServer {
@@ -58,6 +61,9 @@ public class DBServer {
             case "insert":
                 // 1.6 INSERT INTO
                 return insert(command);
+                // 1.7 SELECT
+            case "select":
+                return select(command);
         }
         return "[ERROR] Unknown command: " + command;
     }
@@ -258,6 +264,88 @@ public class DBServer {
                 return "[ERROR] Failed to write table";
             }
         } catch (IOException ioe) {
+            return "[ERROR] Failed to read table";
+        }
+    }
+
+    //1.7 SELECT
+    private String select(String command) {
+        //1.7 Check current Database is set or not.
+        if (currentDatabase == null) {
+            return "[ERROR] You must define a database first";
+        }
+
+        // Transfor , into a list
+        String[] word = command.replace(",", " , ").trim().split(" ");
+        System.out.println(Arrays.toString((word)));
+        List<String> filteredWords = new ArrayList<>();
+        for (String w : word) {
+            if (!w.trim().isEmpty()) {
+                filteredWords.add(w);
+            }
+        }
+        word = filteredWords.toArray(new String[0]);
+        System.out.println(Arrays.toString((word)));
+
+
+
+        // 1.7 Find table_name ( after keyword FROM)
+        int fromIndex = -1;
+        int whereIndex = -1;
+        for (int i = 0; i < word.length; i++) {
+            if (word[i].toLowerCase().equals("from")) {
+                fromIndex = i;
+                break;
+            }
+        }
+        // 1.7 if has where, locate where
+        for (int i = 0; i < word.length; i++) {
+            if (word[i].toLowerCase().equals("where")) {
+                whereIndex = i;
+                break;
+            }
+        }
+
+        // 1.7
+        if (fromIndex == -1 || word[fromIndex + 1] == null) {
+            return "[ERROR] Invalid SELECT command";
+        }
+
+        // 1.7 Check whether table name exist.
+        String tableName = word[fromIndex + 1].trim().toLowerCase().replace(";","").concat(".tab");
+        File tabFile = new File("databases" + File.separator + currentDatabase + File.separator + tableName);
+        System.out.println("[DEBUG] Checking file: " + tabFile.getAbsolutePath());
+        if (!tabFile.exists()) {
+            return "[ERROR] Table not found";
+        }
+
+        //1.7 Open the file
+        try (BufferedReader reader = new BufferedReader(new FileReader(tabFile))){
+
+            // 1.7 set a string builder
+            StringBuilder result = new StringBuilder();
+            String line;
+            if (word[1].equals("*")) {
+                if (whereIndex == -1) {
+                    // 1.7.1 if SELECT * FROM table_name
+                    while ((line = reader.readLine()) != null) {
+                        result.append(line).append("\n");
+                    }
+                }
+            } else {
+                // 1.7 Find attribute
+
+
+
+                if (whereIndex == -1) {
+                    // 1.7.3 if SELECT ATTRIBUTE FROM table_name
+                }
+
+            }
+
+
+            return result.toString();
+        } catch (IOException ioe){
             return "[ERROR] Failed to read table";
         }
     }
