@@ -4,9 +4,9 @@ import java.net.ServerSocket;
 import java.net.Socket;
 import java.nio.file.Paths;
 import java.nio.file.Files;
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
-import java.util.ArrayList;
 
 /** This class implements the DB server. */
 public class DBServer {
@@ -170,6 +170,10 @@ public class DBServer {
             // 1.5b Catch attributes
             String attributes = command.substring(startIndex + 1, endIndex).trim();
             String[] attributeList = attributes.split(",");
+            // 1.5 [BUGFIX] make sure that attribute won't create space.
+            for (int i = 0; i < attributeList.length; i++) {
+                attributeList[i] = attributeList[i].trim();
+            }
 
             //1.5b Check whether table is existed?
             File tabFile = new File("databases" + File.separator + currentDatabase + File.separator + tableName);
@@ -274,20 +278,8 @@ public class DBServer {
         if (currentDatabase == null) {
             return "[ERROR] You must define a database first";
         }
-
-        // Transfor , into a list
-        String[] word = command.replace(",", " , ").trim().split(" ");
+        String[] word = command.trim().split(" ");
         System.out.println(Arrays.toString((word)));
-        List<String> filteredWords = new ArrayList<>();
-        for (String w : word) {
-            if (!w.trim().isEmpty()) {
-                filteredWords.add(w);
-            }
-        }
-        word = filteredWords.toArray(new String[0]);
-        System.out.println(Arrays.toString((word)));
-
-
 
         // 1.7 Find table_name ( after keyword FROM)
         int fromIndex = -1;
@@ -305,16 +297,14 @@ public class DBServer {
                 break;
             }
         }
-
         // 1.7
+
         if (fromIndex == -1 || word[fromIndex + 1] == null) {
             return "[ERROR] Invalid SELECT command";
         }
-
-        // 1.7 Check whether table name exist.
         String tableName = word[fromIndex + 1].trim().toLowerCase().replace(";","").concat(".tab");
+        // 1.7 Check whether table name exist.
         File tabFile = new File("databases" + File.separator + currentDatabase + File.separator + tableName);
-        System.out.println("[DEBUG] Checking file: " + tabFile.getAbsolutePath());
         if (!tabFile.exists()) {
             return "[ERROR] Table not found";
         }
@@ -333,17 +323,73 @@ public class DBServer {
                     }
                 }
             } else {
-                // 1.7 Find attribute
-
-
-
-                if (whereIndex == -1) {
-                    // 1.7.3 if SELECT ATTRIBUTE FROM table_name
+                // 1.7 for loop to delete ,
+                for (int i = 0; i < word.length; i++) {
+                    if (word[i].contains(",")){
+                        word[i] = word[i].replace(",", "");
+                    }
                 }
+                //System.out.println(Arrays.toString((word)));
 
+                // 1.7 Grab attributeList
+                List<String> attributeList = new ArrayList<>();
+                for (int i = 1; i < fromIndex; i++) {
+                    attributeList.add(word[i]);
+                }
+                //System.out.println(attributeList);
+                if (whereIndex == -1) {
+                    // 1.7.(34) if SELECT (ATTRIBUTE) FROM table_name
+                    String header = reader.readLine();
+                    String[] attributeListFromTable = header.split("\t");
+
+                    List<Integer> columnIndexes = new ArrayList<>(); // 1.7.3 Define an array to record num of row
+
+                    //1.7.(34) Check input attribute is in table
+                    for (String attr: attributeList){
+                        boolean found = false;
+                        for (String tableAttr : attributeListFromTable) {
+                            if (tableAttr.equals(attr)) {
+                                found = true;
+                                break;
+                            }
+                        }
+
+                        if (!found) {
+                            return "[ERROR] Column " + attr + " not found in table";
+                        }
+
+                        // 1.7.(34) Record attribute location
+                        for (int i = 0; i < attributeListFromTable.length; i++) {
+                            if(attr.equals(attributeListFromTable[i])){
+                                columnIndexes.add(i);
+                                break;
+                            }
+                        }
+                        System.out.println("<DEBUG> " + columnIndexes);
+                    }
+
+                    // 1.7.(34) Add header
+                    List<String> selectedHeader = new ArrayList<>();
+                    for (int index: columnIndexes) {
+                        selectedHeader.add(attributeListFromTable[index]);
+                    }
+                    result.append(String.join("\t", selectedHeader)).append("\n");
+
+                    // 1.7.3 Print selected attribute
+                    while ((line = reader.readLine()) != null) { //Read every row
+                        String[] rowValues = line.split("\t");
+                        List<String> selectedValues = new ArrayList<>();
+                        for (int index : columnIndexes) {
+                            selectedValues.add(rowValues[index]);
+                        }
+                        result.append(String.join("\t", selectedValues)).append("\n");
+                        System.out.println(result);
+                    }
+
+                    System.out.println("<DEBUG> " + columnIndexes);
+
+                }
             }
-
-
             return result.toString();
         } catch (IOException ioe){
             return "[ERROR] Failed to read table";
