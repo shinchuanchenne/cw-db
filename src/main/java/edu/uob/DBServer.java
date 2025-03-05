@@ -48,7 +48,7 @@ public class DBServer {
 
         //1.4 Check ends with ;
         if (!command.endsWith(";")) {
-            return "[ERROR] Invalid command syntax.";
+            return "[ERROR] Invalid command syntax. Semi colon missing at the end of the line";
         }
         //1.3 Generate a switch to set logic
         String[] words = command.split(" ");
@@ -278,8 +278,9 @@ public class DBServer {
         if (currentDatabase == null) {
             return "[ERROR] You must define a database first";
         }
-        String[] word = command.trim().split(" ");
-        System.out.println(Arrays.toString((word)));
+        System.out.println("<DEBUG> " + command);
+        String[] word = command.trim().replace(";","").split(" ");
+        System.out.println("<DEBUG> " + Arrays.toString((word)));
 
         // 1.7 Find table_name ( after keyword FROM)
         int fromIndex = -1;
@@ -302,7 +303,7 @@ public class DBServer {
         if (fromIndex == -1 || word[fromIndex + 1] == null) {
             return "[ERROR] Invalid SELECT command";
         }
-        String tableName = word[fromIndex + 1].trim().toLowerCase().replace(";","").concat(".tab");
+        String tableName = word[fromIndex + 1].trim().toLowerCase().concat(".tab");
         // 1.7 Check whether table name exist.
         File tabFile = new File("databases" + File.separator + currentDatabase + File.separator + tableName);
         if (!tabFile.exists()) {
@@ -320,6 +321,48 @@ public class DBServer {
                     // 1.7.1 if SELECT * FROM table_name
                     while ((line = reader.readLine()) != null) {
                         result.append(line).append("\n");
+                    }
+                } else {
+                    // 1.7.2 * and where ( SELECT * FROM table_name WHERE (Attribute) == (Value)
+
+                    // 1.7.2 FIND ATTRIBUTE
+                    String attributeName = word[whereIndex + 1];
+                    System.out.println("<DEBUG> " + attributeName);
+                    // 1.7.2 FIND Comparison
+                    String comparisonOperator = word[whereIndex + 2];
+                    System.out.println("<DEBUG> " + comparisonOperator);
+
+
+                    if (comparisonOperator.equals("==") || comparisonOperator.equals("<") || comparisonOperator.equals(">")
+                    || comparisonOperator.equals("<=") || comparisonOperator.equals(">=") || comparisonOperator.equals("!=")
+                    || comparisonOperator.toLowerCase().equals("like")) {
+                        // 1.7.3 FIND VALUES
+                        String valueName = word[whereIndex + 3].replace(";", "").trim();
+                        System.out.println("<DEBUG> " + valueName);
+
+                        // 1.7.3 Make sure that attribute is included
+                        String header = reader.readLine();
+                        String[] attributeListFromTable = header.split("\t");
+                        boolean isFound = false;
+                        int columnIndex = -1;
+                        for (int i = 0; i < attributeListFromTable.length; i++) {
+                            if (attributeListFromTable[i].equals(attributeName)){
+                                isFound = true;
+                                columnIndex = i;
+                                break;
+                            }
+                        }
+                        if (!isFound) {
+                            return "[ERROR] Column " + attributeName + " not found";
+                        }
+
+
+
+
+
+                    } else {
+                        // comparison is not equal
+                        return "[ERROR] Invalid SELECT command, Comparison operator mismatch";
                     }
                 }
             } else {
@@ -375,7 +418,7 @@ public class DBServer {
                     }
                     result.append(String.join("\t", selectedHeader)).append("\n");
 
-                    // 1.7.3 Print selected attribute
+                    // 1.7.3 Print selected attribute (SELECT (ATTRIBUTE) WHERE (TABLE NAME);
                     while ((line = reader.readLine()) != null) { //Read every row
                         String[] rowValues = line.split("\t");
                         List<String> selectedValues = new ArrayList<>();
@@ -383,7 +426,7 @@ public class DBServer {
                             selectedValues.add(rowValues[index]);
                         }
                         result.append(String.join("\t", selectedValues)).append("\n");
-                        System.out.println(result);
+                        System.out.println("<DEBUG> " + result);
                     }
 
                     System.out.println("<DEBUG> " + columnIndexes);
