@@ -50,7 +50,7 @@ public class DBServer {
         if (!command.endsWith(";")) {
             return "[ERROR] Invalid command syntax. Semi colon missing at the end of the line";
         }
-        //1.3 Generate a switch to set logic
+
         String[] words = command.split(" ");
         String keyword = words[0].toLowerCase();
         switch (keyword) {
@@ -63,7 +63,7 @@ public class DBServer {
                 return result;
 
             case "create":
-                return create(command);
+                return Create.setCreate(command, currentDatabase);
             case "insert":
                 // 1.6 INSERT INTO
                 return insert(command);
