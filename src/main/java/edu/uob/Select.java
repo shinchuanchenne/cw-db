@@ -18,8 +18,13 @@ public class Select {
         String[] word = command.trim().replace(";","").split(" ");
         System.out.println("<DEBUG> " + Arrays.toString((word)));
 
+        for (int i = 0; i < word.length; i++) {
+            word[i] = word[i].replace(",", "");
+        }
+
+
         int fromIndex = findFromIndex(word);
-        int whereIndex = findIndex(word);
+        int whereIndex = findWhereIndex(word);
 
 
         // Syntax error if from is -1
@@ -55,15 +60,17 @@ public class Select {
     private static int findFromIndex(String[] word){
         for (int i = 0; i < word.length; i++) {
             if (word[i].toLowerCase().equals("from")) {
+                System.out.println("<DEBUG> From is in: " + i);
                 return i;
             }
         }
         return -1;
     }
     // Find keyword 'where'
-    private static int findIndex(String[] word){
+    private static int findWhereIndex(String[] word){
         for (int i = 0; i < word.length; i++) {
             if (word[i].toLowerCase().equals("where")) {
+                System.out.println("<DEBUG> Where is in :" + i);
                 return i;
             }
         }
@@ -88,7 +95,7 @@ public class Select {
     private static String case2(File tabFile, String[] word, int fromIndex) {
         StringBuilder result = new StringBuilder();
         try (BufferedReader reader = new BufferedReader(new FileReader(tabFile))){
-            return "";
+            return conditionalController(reader, word, fromIndex);
         } catch (IOException e){
             return "[ERROR] Error reading table";
         }
@@ -101,7 +108,13 @@ public class Select {
         }
     }
     private static String case4(File tabFile, String[] word, int fromIndex, int whereIndex) {
-        return "";
+        try (BufferedReader reader = new BufferedReader(new FileReader(tabFile))){
+            String selectColumn = attributeController(reader, word, fromIndex);
+            BufferedReader filteredReader = new BufferedReader(new StringReader(selectColumn));
+            return conditionalController(filteredReader, word, whereIndex);
+        } catch (IOException e){
+            return "[ERROR] Error reading table";
+        }
     }
 
     private static String attributeController(BufferedReader reader, String[] word, int fromIndex) throws IOException {
@@ -157,187 +170,94 @@ public class Select {
 
 
     private static String conditionalController(BufferedReader reader, String[] word, int whereIndex) throws IOException {
+        StringBuilder result = new StringBuilder();
 
+        // 確保 `whereIndex` 之後有 `attributeName`
+        if (whereIndex + 1 >= word.length) {
+            return "[ERROR] Invalid WHERE syntax: Missing column name";
+        }
         // 1.7.2 FIND ATTRIBUTE
         String attributeName = word[whereIndex + 1];
-        System.out.println("<DEBUG> " + attributeName);
+        System.out.println("<DEBUG> Attribute Name: " + attributeName);
+
+        // 確保 `whereIndex` 之後有 `comparisonOperator`
+        if (whereIndex + 2 >= word.length) {
+            return "[ERROR] Invalid WHERE syntax: Missing comparison operator";
+        }
+
         // 1.7.2 FIND Comparison
         String comparisonOperator = word[whereIndex + 2];
-        System.out.println("<DEBUG> " + comparisonOperator);
+        System.out.println("<DEBUG> Comparison Operator: " + comparisonOperator);
 
-        if (comparisonOperator.equals("==") || comparisonOperator.equals("<") || comparisonOperator.equals(">")
+        // Check comparison is valid.
+        if (!(comparisonOperator.equals("==") || comparisonOperator.equals("<") || comparisonOperator.equals(">")
                 || comparisonOperator.equals("<=") || comparisonOperator.equals(">=") || comparisonOperator.equals("!=")
-                || comparisonOperator.toLowerCase().equals("like")) {
-            // 1.7.3 FIND VALUES
-            String valueName = word[whereIndex + 3].replace(";", "").trim();
-            System.out.println("<DEBUG> " + valueName);
-
-            // 1.7.3 Make sure that attribute is included
-            String header = reader.readLine();
-            String[] attributeListFromTable = header.split("\t");
-            boolean isFound = false;
-            int columnIndex = -1;
-            for (int i = 0; i < attributeListFromTable.length; i++) {
-                if (attributeListFromTable[i].equals(attributeName)) {
-                    isFound = true;
-                    columnIndex = i;
-                    break;
-                }
-            }
-            if (!isFound) {
-                return "[ERROR] Column " + attributeName + " not found";
-            }
+                || comparisonOperator.toLowerCase().equals("like"))) {
+            return "[ERROR] Comparison operator " + comparisonOperator + " not supported";
         }
-        return "";
-    }
 
-}
+        // 確保 `whereIndex` 之後有 `valueName`
+        if (whereIndex + 3 >= word.length) {
+            return "[ERROR] Invalid WHERE syntax: Missing value";
+        }
 
-/*
-    //1.7 SELECT
-    private String select(String command) {
+        // 1.7.3 FIND VALUES
+        String valueName = word[whereIndex + 3].replace(";", "").trim();
+        System.out.println("<DEBUG> Value Name: " + valueName);
 
-        // 1.7 Find table_name ( after keyword FROM)
-        int fromIndex = -1;
-        int whereIndex = -1;
-
-        // 1.7 if has where, locate where
-        for (int i = 0; i < word.length; i++) {
-            if (word[i].toLowerCase().equals("where")) {
-                whereIndex = i;
+        // 1.7.3 Make sure that attribute is included
+        String header = reader.readLine();
+        String[] attributeListFromTable = header.split("\t");
+        int columnIndex = -1;
+        for (int i = 0; i < attributeListFromTable.length; i++) {
+            if (attributeListFromTable[i].equals(attributeName)) {
+                columnIndex = i;
                 break;
             }
         }
-        // 1.7
+        if (columnIndex == -1) {
+            return "[ERROR] Column " + attributeName + " not found";
+        }
+
+        // 1.7.3 Adding Header to result
+        result.append(header).append("\n");
 
 
+        String line;
+        while ((line = reader.readLine()) != null) {
+            String[] rowValues = line.split("\t");
 
-        //1.7 Open the file
-        try (BufferedReader reader = new BufferedReader(new FileReader(tabFile))){
-
-            // 1.7 set a string builder
-            StringBuilder result = new StringBuilder();
-            String line;
-            if (word[1].equals("*")) {
-                if (whereIndex == -1) {
-                    // 1.7.1 if SELECT * FROM table_name
-                    while ((line = reader.readLine()) != null) {
-                        result.append(line).append("\n");
-                    }
-                } else {
-                    // 1.7.2 * and where ( SELECT * FROM table_name WHERE (Attribute) == (Value)
-
-                    // 1.7.2 FIND ATTRIBUTE
-                    String attributeName = word[whereIndex + 1];
-                    System.out.println("<DEBUG> " + attributeName);
-                    // 1.7.2 FIND Comparison
-                    String comparisonOperator = word[whereIndex + 2];
-                    System.out.println("<DEBUG> " + comparisonOperator);
-
-
-                    if (comparisonOperator.equals("==") || comparisonOperator.equals("<") || comparisonOperator.equals(">")
-                    || comparisonOperator.equals("<=") || comparisonOperator.equals(">=") || comparisonOperator.equals("!=")
-                    || comparisonOperator.toLowerCase().equals("like")) {
-                        // 1.7.3 FIND VALUES
-                        String valueName = word[whereIndex + 3].replace(";", "").trim();
-                        System.out.println("<DEBUG> " + valueName);
-
-                        // 1.7.3 Make sure that attribute is included
-                        String header = reader.readLine();
-                        String[] attributeListFromTable = header.split("\t");
-                        boolean isFound = false;
-                        int columnIndex = -1;
-                        for (int i = 0; i < attributeListFromTable.length; i++) {
-                            if (attributeListFromTable[i].equals(attributeName)){
-                                isFound = true;
-                                columnIndex = i;
-                                break;
-                            }
-                        }
-                        if (!isFound) {
-                            return "[ERROR] Column " + attributeName + " not found";
-                        }
-
-
-
-
-
-                    } else {
-                        // comparison is not equal
-                        return "[ERROR] Invalid SELECT command, Comparison operator mismatch";
-                    }
-                }
-            } else {
-                // 1.7 for loop to delete ,
-                for (int i = 0; i < word.length; i++) {
-                    if (word[i].contains(",")){
-                        word[i] = word[i].replace(",", "");
-                    }
-                }
-                //System.out.println(Arrays.toString((word)));
-
-                // 1.7 Grab attributeList
-                List<String> attributeList = new ArrayList<>();
-                for (int i = 1; i < fromIndex; i++) {
-                    attributeList.add(word[i]);
-                }
-                //System.out.println(attributeList);
-                if (whereIndex == -1) {
-                    // 1.7.(34) if SELECT (ATTRIBUTE) FROM table_name
-                    String header = reader.readLine();
-                    String[] attributeListFromTable = header.split("\t");
-
-                    List<Integer> columnIndexes = new ArrayList<>(); // 1.7.3 Define an array to record num of row
-
-                    //1.7.(34) Check input attribute is in table
-                    for (String attr: attributeList){
-                        boolean found = false;
-                        for (String tableAttr : attributeListFromTable) {
-                            if (tableAttr.equals(attr)) {
-                                found = true;
-                                break;
-                            }
-                        }
-
-                        if (!found) {
-                            return "[ERROR] Column " + attr + " not found in table";
-                        }
-
-                        // 1.7.(34) Record attribute location
-                        for (int i = 0; i < attributeListFromTable.length; i++) {
-                            if(attr.equals(attributeListFromTable[i])){
-                                columnIndexes.add(i);
-                                break;
-                            }
-                        }
-                        System.out.println("<DEBUG> " + columnIndexes);
-                    }
-
-                    // 1.7.(34) Add header
-                    List<String> selectedHeader = new ArrayList<>();
-                    for (int index: columnIndexes) {
-                        selectedHeader.add(attributeListFromTable[index]);
-                    }
-                    result.append(String.join("\t", selectedHeader)).append("\n");
-
-                    // 1.7.3 Print selected attribute (SELECT (ATTRIBUTE) WHERE (TABLE NAME);
-                    while ((line = reader.readLine()) != null) { //Read every row
-                        String[] rowValues = line.split("\t");
-                        List<String> selectedValues = new ArrayList<>();
-                        for (int index : columnIndexes) {
-                            selectedValues.add(rowValues[index]);
-                        }
-                        result.append(String.join("\t", selectedValues)).append("\n");
-                        System.out.println("<DEBUG> " + result);
-                    }
-
-                    System.out.println("<DEBUG> " + columnIndexes);
-
-                }
+            if (columnIndex >= rowValues.length) {
+                continue;
             }
-            return result.toString();
-        } catch (IOException ioe){
-            return "[ERROR] Failed to read table";
+            String columnValue = rowValues[columnIndex];
+
+            if (compareValues(columnValue, valueName, comparisonOperator)){
+                result.append(line).append("\n");
+            }
+        }
+        return result.toString();
+    }
+
+    private static boolean compareValues(String columnValue, String value, String operator) {
+        switch (operator) {
+            case "==":
+                return columnValue.equals(value);
+            case "!=":
+                return !columnValue.equals(value);
+            case ">":
+                return Double.parseDouble(columnValue) > Double.parseDouble(value);
+            case "<":
+                return Double.parseDouble(columnValue) < Double.parseDouble(value);
+            case ">=":
+                return Double.parseDouble(columnValue) >= Double.parseDouble(value);
+            case "<=":
+                return Double.parseDouble(columnValue) <= Double.parseDouble(value);
+            case "like":
+                return columnValue.contains(value);
+            default:
+                return false;
         }
     }
- */
+
+}

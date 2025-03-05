@@ -59,14 +59,10 @@ public class DBServer {
                     return "[OK]";
                 }
                 return result;
-
             case "create":
                 return Create.setCreate(command, currentDatabase);
-
             case "insert":
-                // 1.6 INSERT INTO
                 return Insert.setInsert(command, currentDatabase);
-                // 1.7 SELECT
             case "select":
                 return Select.setSelect(command, currentDatabase);
         }
