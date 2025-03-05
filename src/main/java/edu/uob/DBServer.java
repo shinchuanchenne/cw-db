@@ -55,7 +55,13 @@ public class DBServer {
         String keyword = words[0].toLowerCase();
         switch (keyword) {
             case "use":
-                return useDatabase(command);
+                String result = Use.setUse(command);
+                if(!result.startsWith("[ERROR]")) {
+                    currentDatabase = result;
+                    return "[OK]";
+                }
+                return result;
+
             case "create":
                 return create(command);
             case "insert":
