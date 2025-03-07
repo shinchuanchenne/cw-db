@@ -65,6 +65,8 @@ public class DBServer {
                 return Insert.setInsert(command, currentDatabase);
             case "select":
                 return Select.setSelect(command, currentDatabase);
+            case "delete":
+                return Delete.setDelete(command, currentDatabase);
         }
         return "[ERROR] Unknown command: " + command;
     }

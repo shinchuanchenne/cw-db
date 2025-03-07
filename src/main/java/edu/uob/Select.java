@@ -79,7 +79,7 @@ public class Select {
 
 
     private static String case1(File tabFile) {
-        StringBuilder result = new StringBuilder();
+        StringBuilder result = new StringBuilder("[OK]\n");
         try (BufferedReader reader = new BufferedReader(new FileReader(tabFile))){
             // 1.7.1 if SELECT * FROM table_name
             String line;
@@ -93,25 +93,41 @@ public class Select {
     }
 
     private static String case2(File tabFile, String[] word, int fromIndex) {
-        StringBuilder result = new StringBuilder();
         try (BufferedReader reader = new BufferedReader(new FileReader(tabFile))){
-            return conditionalController(reader, word, fromIndex);
+            String result = conditionalController(reader, word, fromIndex);
+            if (result.startsWith("[ERROR]")){
+                return result;
+            }
+            return "[OK]\n" + result;
         } catch (IOException e){
             return "[ERROR] Error reading table";
         }
     }
     private static String case3(File tabFile, String[] word, int fromIndex) {
         try (BufferedReader reader = new BufferedReader(new FileReader(tabFile))){
-            return attributeController(reader, word, fromIndex);
+            String result = attributeController(reader, word, fromIndex);
+            if (result.startsWith("[ERROR]")){
+                return result;
+            }
+            return "[OK]\n" + result;
         } catch (IOException e){
             return "[ERROR] Error reading table";
         }
     }
     private static String case4(File tabFile, String[] word, int fromIndex, int whereIndex) {
         try (BufferedReader reader = new BufferedReader(new FileReader(tabFile))){
-            String selectColumn = attributeController(reader, word, fromIndex);
-            BufferedReader filteredReader = new BufferedReader(new StringReader(selectColumn));
-            return conditionalController(filteredReader, word, whereIndex);
+
+            String selectRow = conditionalController(reader, word, whereIndex);
+            if (selectRow.startsWith("[ERROR]")){
+                return selectRow;
+            }
+            BufferedReader fileReader = new BufferedReader(new StringReader(selectRow));
+            String result = attributeController(fileReader, word, fromIndex);
+
+            if (result.startsWith("[ERROR]")){
+                return result;
+            }
+            return "[OK]\n" + result;
         } catch (IOException e){
             return "[ERROR] Error reading table";
         }
@@ -172,7 +188,7 @@ public class Select {
     private static String conditionalController(BufferedReader reader, String[] word, int whereIndex) throws IOException {
         StringBuilder result = new StringBuilder();
 
-        // 確保 `whereIndex` 之後有 `attributeName`
+        // Make sure attribute Name is after whereIndex
         if (whereIndex + 1 >= word.length) {
             return "[ERROR] Invalid WHERE syntax: Missing column name";
         }
@@ -180,7 +196,7 @@ public class Select {
         String attributeName = word[whereIndex + 1];
         System.out.println("<DEBUG> Attribute Name: " + attributeName);
 
-        // 確保 `whereIndex` 之後有 `comparisonOperator`
+        // Make sure comparisonOperator is after whereIndex`
         if (whereIndex + 2 >= word.length) {
             return "[ERROR] Invalid WHERE syntax: Missing comparison operator";
         }
@@ -196,7 +212,7 @@ public class Select {
             return "[ERROR] Comparison operator " + comparisonOperator + " not supported";
         }
 
-        // 確保 `whereIndex` 之後有 `valueName`
+        // Make sure valueName is after whereIndex
         if (whereIndex + 3 >= word.length) {
             return "[ERROR] Invalid WHERE syntax: Missing value";
         }
@@ -220,8 +236,9 @@ public class Select {
         }
 
         // 1.7.3 Adding Header to result
-        result.append(header).append("\n");
+        boolean found = false;
 
+        result.append(header).append("\n");
 
         String line;
         while ((line = reader.readLine()) != null) {
@@ -234,13 +251,17 @@ public class Select {
 
             if (compareValues(columnValue, valueName, comparisonOperator)){
                 result.append(line).append("\n");
+                found = true;
             }
+        }
+        if (!found) {
+            return "[ERROR] No matching value";
         }
         return result.toString();
     }
 
-    private static boolean compareValues(String columnValue, String value, String operator) {
-        switch (operator) {
+    public static boolean compareValues(String columnValue, String value, String operator) {
+        switch (operator.toLowerCase()) {
             case "==":
                 return columnValue.equals(value);
             case "!=":
@@ -254,10 +275,15 @@ public class Select {
             case "<=":
                 return Double.parseDouble(columnValue) <= Double.parseDouble(value);
             case "like":
-                return columnValue.contains(value);
+                value = value.replaceAll("^'+|'+$", "");
+                System.out.println("<DEBUG> Comparing LIKE:");
+                System.out.println("<DEBUG> columnValue = '" + columnValue + "'");
+                System.out.println("<DEBUG> valueName = '" + value + "'");
+                return columnValue.trim().toLowerCase().contains(value.trim().toLowerCase());
             default:
                 return false;
         }
     }
+
 
 }
