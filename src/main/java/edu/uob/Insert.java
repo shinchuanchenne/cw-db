@@ -23,7 +23,7 @@ public class Insert {
         if (!word[1].toLowerCase().equals("into") || !word[3].toLowerCase().equals("values")) {
             return "[ERROR] Invalid INSERT command";
         }
-        // 1.6 Check whether tableName is exist in currentDatabase.
+        // 1.6 Check whether tableName is existed in currentDatabase.
         String tableName = word[2].trim().concat(".tab");
         File tabFile = new File("databases" + File.separator + currentDatabase + File.separator + tableName);
         if (!tabFile.exists()) {
