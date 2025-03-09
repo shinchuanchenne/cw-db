@@ -60,14 +60,13 @@ public class Select {
     private static int findFromIndex(String[] word){
         for (int i = 0; i < word.length; i++) {
             if (word[i].toLowerCase().equals("from")) {
-                System.out.println("<DEBUG> From is in: " + i);
                 return i;
             }
         }
         return -1;
     }
     // Find keyword 'where'
-    private static int findWhereIndex(String[] word){
+    public static int findWhereIndex(String[] word){
         for (int i = 0; i < word.length; i++) {
             if (word[i].toLowerCase().equals("where")) {
                 System.out.println("<DEBUG> Where is in :" + i);
@@ -185,7 +184,7 @@ public class Select {
     }
 
 
-    private static String conditionalController(BufferedReader reader, String[] word, int whereIndex) throws IOException {
+    public static String conditionalController(BufferedReader reader, String[] word, int whereIndex) throws IOException {
         StringBuilder result = new StringBuilder();
 
         // Make sure attribute Name is after whereIndex
@@ -261,28 +260,41 @@ public class Select {
     }
 
     public static boolean compareValues(String columnValue, String value, String operator) {
-        switch (operator.toLowerCase()) {
-            case "==":
-                return columnValue.equals(value);
-            case "!=":
-                return !columnValue.equals(value);
-            case ">":
-                return Double.parseDouble(columnValue) > Double.parseDouble(value);
-            case "<":
-                return Double.parseDouble(columnValue) < Double.parseDouble(value);
-            case ">=":
-                return Double.parseDouble(columnValue) >= Double.parseDouble(value);
-            case "<=":
-                return Double.parseDouble(columnValue) <= Double.parseDouble(value);
-            case "like":
-                value = value.replaceAll("^'+|'+$", "");
-                System.out.println("<DEBUG> Comparing LIKE:");
-                System.out.println("<DEBUG> columnValue = '" + columnValue + "'");
-                System.out.println("<DEBUG> valueName = '" + value + "'");
-                return columnValue.trim().toLowerCase().contains(value.trim().toLowerCase());
-            default:
-                return false;
+
+        try {
+            double columnNumber = Double.parseDouble(columnValue);
+            double valueNumber = Double.parseDouble(value);
+
+            switch(operator){
+                case "==":
+                    return columnNumber == valueNumber;
+                case "!=":
+                    return columnNumber != valueNumber;
+                case ">":
+                    return columnNumber > valueNumber;
+                case "<":
+                    return columnNumber < valueNumber;
+                case ">=":
+                    return columnNumber >= valueNumber;
+                case "<=":
+                    return columnNumber <= valueNumber;
+            }
+        } catch (NumberFormatException e) {
+
+            switch (operator){
+                case "==":
+                    return columnValue.equals(value);
+                case "!=":
+                    return !columnValue.equals(value);
+                case "like":
+                    value = value.replaceAll("^'+|'+$", "");
+                    System.out.println("<DEBUG> Comparing LIKE:");
+                    System.out.println("<DEBUG> columnValue = '" + columnValue + "'");
+                    System.out.println("<DEBUG> valueName = '" + value + "'");
+                    return columnValue.trim().toLowerCase().contains(value.trim().toLowerCase());
+            }
         }
+        return false;
     }
 
 
