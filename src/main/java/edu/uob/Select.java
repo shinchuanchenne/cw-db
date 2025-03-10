@@ -280,17 +280,18 @@ public class Select {
                     return columnNumber <= valueNumber;
             }
         } catch (NumberFormatException e) {
-
+            value = value.replaceAll("^'+|'+$", "");
             switch (operator){
                 case "==":
-                    return columnValue.equals(value);
+                    return columnValue.trim().toLowerCase().equals(value.trim().toLowerCase());
                 case "!=":
-                    return !columnValue.equals(value);
+                    return !(columnValue.trim().toLowerCase().contains(value.trim().toLowerCase()));
                 case "like":
-                    value = value.replaceAll("^'+|'+$", "");
+                    /*
                     System.out.println("<DEBUG> Comparing LIKE:");
                     System.out.println("<DEBUG> columnValue = '" + columnValue + "'");
                     System.out.println("<DEBUG> valueName = '" + value + "'");
+                     */
                     return columnValue.trim().toLowerCase().contains(value.trim().toLowerCase());
             }
         }
