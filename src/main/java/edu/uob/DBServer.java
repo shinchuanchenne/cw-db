@@ -73,6 +73,8 @@ public class DBServer {
                 return Drop.setDrop(command, currentDatabase);
             case "alter":
                 return Alter.setAlter(command, currentDatabase);
+            case "join":
+                return Join.setJoin(command, currentDatabase);
         }
         return "[ERROR] Unknown command: " + command;
     }
