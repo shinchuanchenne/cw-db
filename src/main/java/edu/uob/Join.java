@@ -106,7 +106,9 @@ public class Join {
         newHeader.add("id");
 
         for (int i = 1; i < attributeList1.length; i++) {
-            newHeader.add(tableName1.replace(".tab", "") + "." + attributeList1[i]);
+            if (i != columnIndex1) {
+                newHeader.add(tableName1.replace(".tab", "") + "." + attributeList1[i]);
+            }
         }
         for (int i = 0; i < attributeList2.length; i++) {
             if (i != columnIndex2 && !attributeList2[i].equals("id")) {
@@ -121,9 +123,10 @@ public class Join {
                 if (row1[columnIndex1].equals(row2[columnIndex2])){
                     List<String> mergedRow = new ArrayList<>();
                     for (int i = 1; i < row1.length; i++) {
-                        mergedRow.add(row1[i]);
+                        if (i != columnIndex1){
+                            mergedRow.add(row1[i]);
+                        }
                     }
-
                     for (int i = 0; i < row2.length; i++) {
                         if (i != columnIndex2 && !attributeList2[i].equals("id")) {
                             mergedRow.add(row2[i]);
