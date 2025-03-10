@@ -3,6 +3,12 @@ import java.io.File;
 import java.io.IOException;
 import java.io.FileWriter;
 
+/*
+CREATE DATABASE database_name;
+CREATE TABLE table_name;
+CREATE TABLE table_name ( attribute1, attribute2, attribute3);
+ */
+
 public class Create {
 
     public static String setCreate(String command, String currentDatabase) {

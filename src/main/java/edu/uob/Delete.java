@@ -3,6 +3,10 @@ package edu.uob;
 import java.io.*;
 import java.util.Arrays;
 
+/*
+DELETE FROM table_name WHERE cond_attribute cond_operation cond_value;
+ */
+
 public class Delete {
 
     public static String setDelete(String command, String currentDatabase){

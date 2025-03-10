@@ -7,7 +7,7 @@ public class Use {
     public static String setUse(String command){
         String databaseName = command.substring(4).trim().replace(";","");
 
-        //1.2 Check whether databases/mydatabases is exist?
+        //1.2 Check whether databases/mydatabases is existed?
         File dbFolder = new File("databases" + File.separator + databaseName);
         if (dbFolder.exists()) {
             //1.2 set current database = databaseName

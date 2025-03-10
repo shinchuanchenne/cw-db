@@ -5,6 +5,14 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
+/*
+SELECT * FROM table_name;
+SELECT * FROM table_name WHERE cond_attribute cond_operation cond_value;
+SELECT attribute, attribute2 FROM table_name;
+SELECT attribute, attribute2 FROM table_name WHERE cond_attribute cond_operation cond_value;
+ */
+
+
 public class Select {
 
     public static String setSelect(String command, String currentDatabase){

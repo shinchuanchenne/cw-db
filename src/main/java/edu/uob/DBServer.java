@@ -71,6 +71,8 @@ public class DBServer {
                 return Update.setUpdate(command, currentDatabase);
             case "drop":
                 return Drop.setDrop(command, currentDatabase);
+            case "alter":
+                return Alter.setAlter(command, currentDatabase);
         }
         return "[ERROR] Unknown command: " + command;
     }

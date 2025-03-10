@@ -1,6 +1,11 @@
 package edu.uob;
 import java.io.*;
 
+/*
+DROP DATABASE database_name;
+DROP TABLE table_name;
+ */
+
 public class Drop {
 
     public static String setDrop(String command, String currentDatabase) {

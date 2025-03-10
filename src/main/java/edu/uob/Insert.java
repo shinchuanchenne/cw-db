@@ -1,6 +1,10 @@
 package edu.uob;
 import java.io.*;
 
+/*
+INSERT INTO table_name VALUE ( value_list, value_list2, value_list3);
+ */
+
 public class Insert {
 
 
