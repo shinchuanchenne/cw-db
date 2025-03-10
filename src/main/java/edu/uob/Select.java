@@ -21,9 +21,18 @@ public class Select {
             return "[ERROR] You must define a database first";
         }
 
+        command = command.replace(">=", " >= ")
+                .replace("<=", " <= ")
+                .replace("!=", " != ")
+                .replace(">", " > ")
+                .replace("<", " < ")
+                .replace("==", " == ")
+                .replace("LIKE", " LIKE ");
+
+
         // 1.7 Find keyword from and where
         System.out.println("<DEBUG> " + command);
-        String[] word = command.trim().replace(";","").split(" ");
+        String[] word = command.trim().replace(";","").split("\\s+");
         System.out.println("<DEBUG> " + Arrays.toString((word)));
 
         for (int i = 0; i < word.length; i++) {
@@ -195,6 +204,7 @@ public class Select {
     public static String conditionalController(BufferedReader reader, String[] word, int whereIndex) throws IOException {
         StringBuilder result = new StringBuilder();
 
+        System.out.println("<DEBUG> WHERE Condition: " + Arrays.toString(Arrays.copyOfRange(word, whereIndex, word.length)));
         // Make sure attribute Name is after whereIndex
         if (whereIndex + 1 >= word.length) {
             return "[ERROR] Invalid WHERE syntax: Missing column name";
@@ -289,18 +299,14 @@ public class Select {
             }
         } catch (NumberFormatException e) {
             value = value.replaceAll("^'+|'+$", "");
-            switch (operator){
+            columnValue = columnValue.trim();
+            switch (operator.toLowerCase()){
                 case "==":
                     return columnValue.trim().toLowerCase().equals(value.trim().toLowerCase());
                 case "!=":
                     return !(columnValue.trim().toLowerCase().contains(value.trim().toLowerCase()));
                 case "like":
-                    /*
-                    System.out.println("<DEBUG> Comparing LIKE:");
-                    System.out.println("<DEBUG> columnValue = '" + columnValue + "'");
-                    System.out.println("<DEBUG> valueName = '" + value + "'");
-                     */
-                    return columnValue.trim().toLowerCase().contains(value.trim().toLowerCase());
+                    return columnValue.toLowerCase().contains(value.toLowerCase());
             }
         }
         return false;

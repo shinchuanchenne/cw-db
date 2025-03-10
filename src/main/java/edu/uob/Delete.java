@@ -16,9 +16,17 @@ public class Delete {
             return "[ERROR] You must define a database first";
         }
 
+        command = command.replace(">=", " >= ")
+                .replace("<=", " <= ")
+                .replace("!=", " != ")
+                .replace(">", " > ")
+                .replace("<", " < ")
+                .replace("==", " == ")
+                .replace("LIKE", " LIKE ");
+
         // 1.8 Find keyword
         System.out.println("<DEBUG> " + command);
-        String[] word = command.trim().replace(";","").split(" ");
+        String[] word = command.trim().replace(";","").split("\\s+");
         System.out.println("<DEBUG> " + Arrays.toString((word)));
 
         // 1.8 Make sure syntax "DELETE" "FROM" "WHERE"
