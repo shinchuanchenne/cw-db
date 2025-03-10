@@ -29,6 +29,10 @@ public class Alter {
         }
 
         String alterAttribute = word[4].replace("\'", "");
+        // Can not modify ID
+        if (alterAttribute.equals("id")) {
+            return "[ERROR] You can not modify ID";
+        }
 
         //Check whether tableName is existed in currentDatabase.
         String tableName = word[2].trim().concat(".tab");

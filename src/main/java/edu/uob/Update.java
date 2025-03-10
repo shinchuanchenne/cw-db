@@ -23,6 +23,10 @@ public class Update {
         if (setIndex != 2) {
             return "[ERROR] Invalid Update command (no set)";
         }
+        // Can not set ID
+        if (word[3].toLowerCase().equals("id")){
+            return "[ERROR] You can not modify ID";
+        }
 
         // Find where
         int whereIndex = Select.findWhereIndex(word);
