@@ -17,7 +17,7 @@ public class Join {
         }
 
         // Find keyword;
-        String[] word = command.trim().replace(";","").split(" ");
+        String[] word = command.trim().replace(";","").split("\\s+");
         // Check syntax has the right number value;
         if (word.length < 8) {
             return "[ERROR] Invalid Join syntax.";

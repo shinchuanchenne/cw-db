@@ -16,7 +16,7 @@ public class Drop {
         }
 
         // Find keyword;
-        String[] word = command.trim().replace(";","").split(" ");
+        String[] word = command.trim().replace(";","").split("\\s+");
 
         // Check the syntax (DROP DATABASE/TABLE name) only 3 words.
         if (word.length != 3) {
@@ -41,13 +41,17 @@ public class Drop {
         if (!dbFolder.exists()) {
             return "[ERROR] Database does not exist";
         }
-        if (currentDatabase.equals(databaseName)) {
-            currentDatabase = null;
-        }
         // Delete selected database folder.
-        return deleteRecursively(dbFolder);
+        String deleteResult = deleteRecursively(dbFolder);
+        if (!deleteResult.equals("[OK]")){
+            return deleteResult;
+        }
+        return "[OK] " + databaseName;
     }
     public static String dropTable(String[] word, String currentDatabase) {
+        // Get database's name
+        String databaseName = word[2].trim().replace(";","");
+
         // Get table name
         String tableName = word[2].trim().toLowerCase().replace(";","").concat(".tab");
         File tabFile = new File("databases" + File.separator + currentDatabase + File.separator + tableName);
@@ -55,11 +59,13 @@ public class Drop {
         if (!tabFile.exists()) {
             return "[ERROR] Table not found";
         }
-        tabFile.delete();
-        if (!tabFile.exists()) {
-            return "[OK]";
+        boolean deleted = tabFile.delete();
+
+        if (deleted) {
+            return "[OK] " + databaseName;
+        } else {
+            return "[ERROR] Could not delete tab file";
         }
-        return "[ERROR] Could not delete tab file";
     }
 
     public static String deleteRecursively(File folder){

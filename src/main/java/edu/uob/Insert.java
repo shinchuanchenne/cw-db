@@ -14,6 +14,7 @@ public class Insert {
             return "[ERROR] You must define a database first";
         }
 
+        System.out.println("[DEBUG] 1 command : " + command);
         // 1.6 Separate each command. (separate( with space.)
         if (command.contains("(")){
             command = command.replace("(", " ( ");
@@ -21,7 +22,9 @@ public class Insert {
         if (command.contains(",")){
             command = command.replace(",", " , ");
         }
-        String[] word = command.trim().split(" ");
+        System.out.println("[DEBUG] 2 command : " + command);
+
+        String[] word = command.trim().split("\\s+");
 
         // 1.6 Check whether syntax is correct
         if (!word[1].toLowerCase().equals("into") || !word[3].toLowerCase().equals("values")) {
@@ -38,18 +41,31 @@ public class Insert {
         // 1.6 Find ( and ) after value
         int startIndex = command.indexOf("(");
         int endIndex = command.indexOf(")");
+
+        if (startIndex == -1 || endIndex == -1 || startIndex > endIndex) {
+            return "[ERROR] Invalid INSERT syntax (missing parentheses)";
+        }
+
         // 1.6 Catch values
         String values = command.substring(startIndex + 1, endIndex).trim();
-        String[] valueList = values.replace("\'", "").split(","); // Make sure ' will delete
+        String[] valueList = values.split("\\s*, \\s*"); // Make sure ' will delete
 
-        // 1.6 delete other space
-        for (int i = 0; i < valueList.length; i++) {
-            valueList[i] = valueList[i].trim();
+
+
+        for (String value : valueList) {
+            if(!ErrorHandling.valueCheck(value).equals("[OK]")) {
+                return "[ERROR] Invalid value: " + value;
+            }
         }
+
+        for (int i = 0; i < valueList.length; i++) {
+            if (valueList[i].matches("'[^']*'")) {  // Make sure that is StringLiteral
+                valueList[i] = valueList[i].substring(1, valueList[i].length() - 1);
+            }
+        }
+
         // 1.6 Make sure numbers of valueList is equal to first row of file.
         int numberOfValues = valueList.length; //Record numbers of given values
-
-
 
         // 1.6 READ the file first line
         try (BufferedReader reader = new BufferedReader(new FileReader(tabFile))){

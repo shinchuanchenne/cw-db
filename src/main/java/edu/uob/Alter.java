@@ -18,7 +18,7 @@ public class Alter {
         }
 
         // Find keyword;
-        String[] word = command.trim().replace(";","").split(" ");
+        String[] word = command.trim().replace(";","").split("\\s+");
 
         // Check the syntax (DROP DATABASE/TABLE name) only 3 words.
         if (word.length != 5) {
@@ -29,6 +29,13 @@ public class Alter {
         }
 
         String alterAttribute = word[4].replace("\'", "");
+
+        // Check attribute name is legal.
+        String checkattrName = ErrorHandling.plainTextCheck(alterAttribute, "AttributeName");
+        if (!checkattrName.equals("[OK]")) {
+            return checkattrName;
+        }
+
         // Can not modify ID
         if (alterAttribute.equals("id")) {
             return "[ERROR] You can not modify ID";

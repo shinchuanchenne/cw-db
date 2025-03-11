@@ -18,7 +18,7 @@ public class Update {
 
         // 1.8 Find keyword
         // Find set
-        String[] word = command.trim().replace(";","").split(" ");
+        String[] word = command.trim().replace(";","").split("\\s+");
         int setIndex = findSetIndex(word);
         if (setIndex != 2) {
             return "[ERROR] Invalid Update command (no set)";
@@ -122,9 +122,25 @@ public class Update {
             while ((line = reader.readLine()) != null) {
                 String[] rowValues = line.split("\t");
 
+                // If column is less than header, filled with NULL
+                // 1	Simon	65	TRUE	35
+                if (rowValues.length < attributeList.length) {
+                    rowValues = Arrays.copyOf(rowValues, attributeList.length);
+                    Arrays.fill(rowValues, rowValues.length - (attributeList.length - rowValues.length), rowValues.length, "NULL");
+                }
+
+
                 if (Select.compareValues(rowValues[whereColumnIndex], whereValue, whereOperator)){
                     for (int i = 0; i < setColumnIndexes.size(); i++) {
                         int columnIndex = setColumnIndexes.get(i);
+
+                        // 避免 ArrayIndexOutOfBoundsException
+                        if (columnIndex >= rowValues.length) {
+                            System.out.println("<ERROR> columnIndex " + columnIndex + " 超出 rowValues 長度 " + rowValues.length);
+                            return "[ERROR] Invalid table format or missing values in some rows";
+                        }
+
+
                         rowValues[columnIndex] = setValues.get(i);
                     }
                     updated = true;

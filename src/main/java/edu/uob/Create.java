@@ -13,7 +13,7 @@ public class Create {
 
     public static String setCreate(String command, String currentDatabase) {
         //1.3 Standarise words after CREATE
-        String[] word = command.toLowerCase().trim().split(" ");
+        String[] word = command.toLowerCase().trim().split("\\s+");
 
         //1.3 Check no parameter.
         if (word.length < 2) {
@@ -35,8 +35,14 @@ public class Create {
     //1.4 Writing Create Database
     private static String createDatabase(String command) {
         //1.4
-        String[] word = command.toLowerCase().trim().split(" ");
+        String[] word = command.toLowerCase().trim().split("\\s+");
         String databaseName = word[2].trim().replace(";","");
+
+        // Check database name is legal.
+        String checkdbName = ErrorHandling.plainTextCheck(databaseName, "DatabaseName");
+        if (!checkdbName.equals("[OK]")) {
+            return checkdbName;
+        }
 
         File dbFolder = new File("databases" + File.separator + databaseName);
         if (!dbFolder.exists()) {
@@ -61,13 +67,20 @@ public class Create {
         if (command.contains("(")){
             command = command.replace("(", " (");
         }
-        String[] word = command.trim().split(" ");
+        String[] word = command.trim().split("\\s+");
 
         //1.5a get table name
         if (word.length == 3) {
             // 1.5a type: create table student;
             String tableName = word[2].trim().replace(";","").concat(".tab");
             File tabFile = new File("databases" + File.separator + currentDatabase + File.separator + tableName);
+
+            // Check table name is legal.
+            String checktbName = ErrorHandling.plainTextCheck(tableName, "TableName");
+            if (!checktbName.equals("[OK]")) {
+                return checktbName;
+            }
+
             // 1.5a If .tab file (table) is not exist, create a .tab
             if (!tabFile.exists()) {
                 try {
@@ -76,6 +89,7 @@ public class Create {
                     return "[ERROR] Failed to create table";
                 }
                 //1.5a create id in the first row
+
                 try(FileWriter writer = new FileWriter(tabFile)){
                     writer.write("id\n");
                     writer.flush();
@@ -100,6 +114,13 @@ public class Create {
             // 1.5 [BUGFIX] make sure that attribute won't create space.
             for (int i = 0; i < attributeList.length; i++) {
                 attributeList[i] = attributeList[i].trim();
+
+                // Check attribute name is validated.
+                String checkAttrName = ErrorHandling.plainTextCheck(attributeList[i], "AttributeName");
+                if (!checkAttrName.equals("[OK]")) {
+                    return checkAttrName;
+                }
+
             }
 
             //1.5b Check whether table is existed?

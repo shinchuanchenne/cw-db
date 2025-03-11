@@ -62,7 +62,7 @@ public class DBServer {
             case "create":
                 return Create.setCreate(command, currentDatabase);
             case "insert":
-                return Insert.setInsert(command, currentDatabase);
+                return Insert.setInsert(command, currentDatabase); // VALUE
             case "select":
                 return Select.setSelect(command, currentDatabase);
             case "delete":
@@ -70,7 +70,15 @@ public class DBServer {
             case "update":
                 return Update.setUpdate(command, currentDatabase);
             case "drop":
-                return Drop.setDrop(command, currentDatabase);
+                String dropResult = Drop.setDrop(command, currentDatabase);
+                if (dropResult.startsWith("[OK]")) {
+                    String deleteDB = dropResult.split(" ")[1];
+                    if (currentDatabase != null && currentDatabase.equals(deleteDB)) {
+                        currentDatabase = null;
+                    }
+                    return "[OK]";
+                }
+                return dropResult;
             case "alter":
                 return Alter.setAlter(command, currentDatabase);
             case "join":

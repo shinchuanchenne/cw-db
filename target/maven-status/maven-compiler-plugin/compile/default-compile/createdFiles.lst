@@ -1,10 +1,15 @@
 edu/uob/Create.class
-edu/uob/DBServer.class
 edu/uob/Update.class
+edu/uob/Column.class
 edu/uob/DBClient.class
 edu/uob/Select.class
 edu/uob/Alter.class
+edu/uob/Insert.class
+edu/uob/Join.class
+edu/uob/DBServer.class
+edu/uob/Database.class
+edu/uob/Table.class
 edu/uob/Use.class
 edu/uob/Drop.class
 edu/uob/Delete.class
-edu/uob/Insert.class
+edu/uob/ErrorHandling.class
