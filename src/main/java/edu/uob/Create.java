@@ -114,11 +114,21 @@ public class Create {
             // 1.5 [BUGFIX] make sure that attribute won't create space.
             for (int i = 0; i < attributeList.length; i++) {
                 attributeList[i] = attributeList[i].trim();
-
                 // Check attribute name is validated.
                 String checkAttrName = ErrorHandling.plainTextCheck(attributeList[i], "AttributeName");
                 if (!checkAttrName.equals("[OK]")) {
                     return checkAttrName;
+                }
+
+                if (attributeList[i].equalsIgnoreCase("id")) {
+                    return "[ERROR] You can not create an id attribute";
+                }
+
+                // Check has same attribute.
+                for (int j = 0; j < i; j++){
+                    if (attributeList[j].toLowerCase().equals(attributeList[i].toLowerCase())) {
+                        return "[ERROR] Duplicate attribute";
+                    }
                 }
 
             }

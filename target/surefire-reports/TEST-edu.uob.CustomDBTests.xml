@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<testsuite xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="https://maven.apache.org/surefire/maven-surefire-plugin/xsd/surefire-test-report-3.0.xsd" version="3.0" name="edu.uob.ExampleDBTests" time="0.029" tests="4" errors="0" skipped="0" failures="0">
+<testsuite xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="https://maven.apache.org/surefire/maven-surefire-plugin/xsd/surefire-test-report-3.0.xsd" version="3.0" name="edu.uob.CustomDBTests" time="0.045" tests="7" errors="0" skipped="0" failures="0">
   <properties>
     <property name="java.specification.version" value="17"/>
     <property name="sun.jnu.encoding" value="UTF-8"/>
@@ -12,10 +12,10 @@
     <property name="sun.java.launcher" value="SUN_STANDARD"/>
     <property name="user.country" value="GB"/>
     <property name="sun.boot.library.path" value="/Users/shinchuanchen/Library/Java/JavaVirtualMachines/temurin-17.0.13/Contents/Home/lib"/>
-    <property name="sun.java.command" value="/Users/shinchuanchen/Documents/University_of_Bristol/JAVA2024/Weekly Workbooks/07 DB assignment/resources/cw-db/target/surefire/surefirebooter13538709773316072854.jar /Users/shinchuanchen/Documents/University_of_Bristol/JAVA2024/Weekly Workbooks/07 DB assignment/resources/cw-db/target/surefire 2025-03-11T10-05-24_009-jvmRun1 surefire5453219135487076945tmp surefire_012486518431347648406tmp"/>
+    <property name="sun.java.command" value="/Users/shinchuanchen/Documents/University_of_Bristol/JAVA2024/Weekly Workbooks/07 DB assignment/resources/cw-db/target/surefire/surefirebooter17943036747823014272.jar /Users/shinchuanchen/Documents/University_of_Bristol/JAVA2024/Weekly Workbooks/07 DB assignment/resources/cw-db/target/surefire 2025-03-11T18-17-54_255-jvmRun1 surefire14917852008474873243tmp surefire_07416670613809104007tmp"/>
     <property name="http.nonProxyHosts" value="local|*.local|169.254/16|*.169.254/16"/>
     <property name="jdk.debug" value="release"/>
-    <property name="test" value="edu.uob.ExampleDBTests"/>
+    <property name="test" value="edu.uob.CustomDBTests"/>
     <property name="surefire.test.class.path" value="/Users/shinchuanchen/Documents/University_of_Bristol/JAVA2024/Weekly Workbooks/07 DB assignment/resources/cw-db/target/test-classes:/Users/shinchuanchen/Documents/University_of_Bristol/JAVA2024/Weekly Workbooks/07 DB assignment/resources/cw-db/target/classes:/Users/shinchuanchen/.m2/repository/org/junit/jupiter/junit-jupiter/5.8.2/junit-jupiter-5.8.2.jar:/Users/shinchuanchen/.m2/repository/org/junit/jupiter/junit-jupiter-api/5.8.2/junit-jupiter-api-5.8.2.jar:/Users/shinchuanchen/.m2/repository/org/opentest4j/opentest4j/1.2.0/opentest4j-1.2.0.jar:/Users/shinchuanchen/.m2/repository/org/junit/platform/junit-platform-commons/1.8.2/junit-platform-commons-1.8.2.jar:/Users/shinchuanchen/.m2/repository/org/apiguardian/apiguardian-api/1.1.2/apiguardian-api-1.1.2.jar:/Users/shinchuanchen/.m2/repository/org/junit/jupiter/junit-jupiter-params/5.8.2/junit-jupiter-params-5.8.2.jar:/Users/shinchuanchen/.m2/repository/org/junit/jupiter/junit-jupiter-engine/5.8.2/junit-jupiter-engine-5.8.2.jar:/Users/shinchuanchen/.m2/repository/org/junit/platform/junit-platform-engine/1.8.2/junit-platform-engine-1.8.2.jar:/Users/shinchuanchen/.m2/repository/org/junit/platform/junit-platform-suite/1.8.2/junit-platform-suite-1.8.2.jar:/Users/shinchuanchen/.m2/repository/org/junit/platform/junit-platform-suite-api/1.8.2/junit-platform-suite-api-1.8.2.jar:/Users/shinchuanchen/.m2/repository/org/junit/platform/junit-platform-suite-engine/1.8.2/junit-platform-suite-engine-1.8.2.jar:/Users/shinchuanchen/.m2/repository/org/junit/platform/junit-platform-suite-commons/1.8.2/junit-platform-suite-commons-1.8.2.jar:/Users/shinchuanchen/.m2/repository/org/junit/platform/junit-platform-launcher/1.8.2/junit-platform-launcher-1.8.2.jar:"/>
     <property name="sun.cpu.endian" value="little"/>
     <property name="user.home" value="/Users/shinchuanchen"/>
@@ -29,7 +29,7 @@
     <property name="line.separator" value="&#10;"/>
     <property name="java.vm.specification.vendor" value="Oracle Corporation"/>
     <property name="java.specification.name" value="Java Platform API Specification"/>
-    <property name="surefire.real.class.path" value="/Users/shinchuanchen/Documents/University_of_Bristol/JAVA2024/Weekly Workbooks/07 DB assignment/resources/cw-db/target/surefire/surefirebooter13538709773316072854.jar"/>
+    <property name="surefire.real.class.path" value="/Users/shinchuanchen/Documents/University_of_Bristol/JAVA2024/Weekly Workbooks/07 DB assignment/resources/cw-db/target/surefire/surefirebooter17943036747823014272.jar"/>
     <property name="sun.management.compiler" value="HotSpot 64-Bit Tiered Compilers"/>
     <property name="ftp.nonProxyHosts" value="local|*.local|169.254/16|*.169.254/16"/>
     <property name="java.runtime.version" value="17.0.13+11"/>
@@ -57,29 +57,128 @@
     <property name="socksNonProxyHosts" value="local|*.local|169.254/16|*.169.254/16"/>
     <property name="java.class.version" value="61.0"/>
   </properties>
-  <testcase name="testQueryID" classname="edu.uob.ExampleDBTests" time="0.017">
-    <system-out><![CDATA[<DEBUG> SELECT id FROM marks WHERE name  ==  'Simon';
-<DEBUG> [SELECT, id, FROM, marks, WHERE, name, ==, 'Simon']
+  <testcase name="testInvalidCommands" classname="edu.uob.CustomDBTests" time="0.016">
+    <system-out><![CDATA[<DEBUG> SELECT height FROM marks WHERE name  ==  'Chris';
+<DEBUG> [SELECT, height, FROM, marks, WHERE, name, ==, 'Chris']
 <DEBUG> Where is in :4
-<DEBUG> WHERE Condition: [WHERE, name, ==, 'Simon']
+<DEBUG> WHERE Condition: [WHERE, name, ==, 'Chris']
 <DEBUG> Attribute Name: name
 <DEBUG> Comparison Operator: ==
-<DEBUG> Value Name: 'Simon'
+<DEBUG> Value Name: 'Chris'
+<DEBUG> SELECT * FROM library;
+<DEBUG> [SELECT, *, FROM, library]
 ]]></system-out>
   </testcase>
-  <testcase name="testBasicCreateAndQuery" classname="edu.uob.ExampleDBTests" time="0.004">
-    <system-out><![CDATA[<DEBUG> SELECT * FROM marks;
+  <testcase name="testDropTableAndDatabase" classname="edu.uob.CustomDBTests" time="0.006">
+    <system-out><![CDATA[[DEBUG] 1 command : INSERT INTO marks VALUES ('Simon', 65, TRUE);
+[DEBUG] 2 command : INSERT INTO marks VALUES  ( 'Simon' ,  65 ,  TRUE);
+<DEBUG> SELECT * FROM marks;
 <DEBUG> [SELECT, *, FROM, marks]
 ]]></system-out>
   </testcase>
-  <testcase name="testTablePersistsAfterRestart" classname="edu.uob.ExampleDBTests" time="0.002">
-    <system-out><![CDATA[<DEBUG> SELECT * FROM marks;
+  <testcase name="testCreateAndInsert" classname="edu.uob.CustomDBTests" time="0.003">
+    <system-out><![CDATA[[DEBUG] 1 command : INSERT INTO marks VALUES ('Simon', 65, TRUE);
+[DEBUG] 2 command : INSERT INTO marks VALUES  ( 'Simon' ,  65 ,  TRUE);
+[DEBUG] 1 command : INSERT INTO marks VALUES ('Sion', 55, TRUE);
+[DEBUG] 2 command : INSERT INTO marks VALUES  ( 'Sion' ,  55 ,  TRUE);
+[DEBUG] 1 command : INSERT INTO marks VALUES ('Rob', 35, FALSE);
+[DEBUG] 2 command : INSERT INTO marks VALUES  ( 'Rob' ,  35 ,  FALSE);
+[DEBUG] 1 command : INSERT INTO marks VALUES ('Chris', 20, FALSE);
+[DEBUG] 2 command : INSERT INTO marks VALUES  ( 'Chris' ,  20 ,  FALSE);
+<DEBUG> SELECT * FROM marks;
 <DEBUG> [SELECT, *, FROM, marks]
 ]]></system-out>
   </testcase>
-  <testcase name="testForErrorTag" classname="edu.uob.ExampleDBTests" time="0.002">
-    <system-out><![CDATA[<DEBUG> SELECT * FROM libraryfines;
-<DEBUG> [SELECT, *, FROM, libraryfines]
+  <testcase name="testAlterTable" classname="edu.uob.CustomDBTests" time="0.002">
+    <system-out><![CDATA[[DEBUG] 1 command : INSERT INTO marks VALUES ('Simon', 65, TRUE);
+[DEBUG] 2 command : INSERT INTO marks VALUES  ( 'Simon' ,  65 ,  TRUE);
+<DEBUG> SELECT * FROM marks;
+<DEBUG> [SELECT, *, FROM, marks]
+<DEBUG> SELECT * FROM marks;
+<DEBUG> [SELECT, *, FROM, marks]
+]]></system-out>
+  </testcase>
+  <testcase name="testJoin" classname="edu.uob.CustomDBTests" time="0.004">
+    <system-out><![CDATA[[DEBUG] 1 command : INSERT INTO coursework VALUES ('OXO', 3);
+[DEBUG] 2 command : INSERT INTO coursework VALUES  ( 'OXO' ,  3);
+[DEBUG] 1 command : INSERT INTO coursework VALUES ('DB', 1);
+[DEBUG] 2 command : INSERT INTO coursework VALUES  ( 'DB' ,  1);
+[DEBUG] 1 command : INSERT INTO coursework VALUES ('OXO', 4);
+[DEBUG] 2 command : INSERT INTO coursework VALUES  ( 'OXO' ,  4);
+[DEBUG] 1 command : INSERT INTO coursework VALUES ('STAG', 2);
+[DEBUG] 2 command : INSERT INTO coursework VALUES  ( 'STAG' ,  2);
+[DEBUG] 1 command : INSERT INTO marks VALUES ('Simon', 65, TRUE);
+[DEBUG] 2 command : INSERT INTO marks VALUES  ( 'Simon' ,  65 ,  TRUE);
+[DEBUG] 1 command : INSERT INTO marks VALUES ('Sion', 55, TRUE);
+[DEBUG] 2 command : INSERT INTO marks VALUES  ( 'Sion' ,  55 ,  TRUE);
+[DEBUG] 1 command : INSERT INTO marks VALUES ('Rob', 35, FALSE);
+[DEBUG] 2 command : INSERT INTO marks VALUES  ( 'Rob' ,  35 ,  FALSE);
+[DEBUG] 1 command : INSERT INTO marks VALUES ('Chris', 20, FALSE);
+[DEBUG] 2 command : INSERT INTO marks VALUES  ( 'Chris' ,  20 ,  FALSE);
+]]></system-out>
+  </testcase>
+  <testcase name="testUpdateAndDelete" classname="edu.uob.CustomDBTests" time="0.004">
+    <system-out><![CDATA[[DEBUG] 1 command : INSERT INTO marks VALUES ('Simon', 65, TRUE);
+[DEBUG] 2 command : INSERT INTO marks VALUES  ( 'Simon' ,  65 ,  TRUE);
+[DEBUG] 1 command : INSERT INTO marks VALUES ('Sion', 55, TRUE);
+[DEBUG] 2 command : INSERT INTO marks VALUES  ( 'Sion' ,  55 ,  TRUE);
+[DEBUG] 1 command : INSERT INTO marks VALUES ('Rob', 35, FALSE);
+[DEBUG] 2 command : INSERT INTO marks VALUES  ( 'Rob' ,  35 ,  FALSE);
+[DEBUG] 1 command : INSERT INTO marks VALUES ('Chris', 20, FALSE);
+[DEBUG] 2 command : INSERT INTO marks VALUES  ( 'Chris' ,  20 ,  FALSE);
+<DEBUG> Set is in :2
+<DEBUG> Where is in :6
+<DEBUG> Parsed column name :[mark]
+<DEBUG> Parsed value :[38]
+<DEBUG> Where name: name
+<DEBUG> Where operator: ==
+<DEBUG> Where value: 'Chris'
+<DEBUG> Parsed column indexes :[2]
+<DEBUG> WHERE ColumnIndex :1
+<DEBUG> Unchanged row :1	Simon	65	TRUE
+<DEBUG> Unchanged row :2	Sion	55	TRUE
+<DEBUG> Unchanged row :3	Rob	35	FALSE
+<DEBUG> Parsed row :4	Chris	38	FALSE
+<DEBUG> SELECT * FROM marks WHERE name  ==  'Chris';
+<DEBUG> [SELECT, *, FROM, marks, WHERE, name, ==, 'Chris']
+<DEBUG> Where is in :4
+<DEBUG> WHERE Condition: [WHERE, name, ==, 'Chris']
+<DEBUG> Attribute Name: name
+<DEBUG> Comparison Operator: ==
+<DEBUG> Value Name: 'Chris'
+<DEBUG> DELETE FROM marks WHERE name  ==  'Sion';
+<DEBUG> [DELETE, FROM, marks, WHERE, name, ==, 'Sion']
+<INDEX> Comparison Operator: ==
+<INDEX> Value: 'Sion'
+<DEBUG> Read Line:  1	Simon	65	TRUE
+<DEBUG> Compare Column: Simon
+<DEBUG> Read Line:  2	Sion	55	TRUE
+<DEBUG> Compare Column: Sion
+<DEBUG> Delete Column: 2	Sion	55	TRUE
+<DEBUG> Read Line:  3	Rob	35	FALSE
+<DEBUG> Compare Column: Rob
+<DEBUG> Read Line:  4	Chris	38	FALSE
+<DEBUG> Compare Column: Chris
+<DEBUG> SELECT * FROM marks;
+<DEBUG> [SELECT, *, FROM, marks]
+]]></system-out>
+  </testcase>
+  <testcase name="testWhereClause" classname="edu.uob.CustomDBTests" time="0.004">
+    <system-out><![CDATA[[DEBUG] 1 command : INSERT INTO marks VALUES ('Simon', 65, TRUE);
+[DEBUG] 2 command : INSERT INTO marks VALUES  ( 'Simon' ,  65 ,  TRUE);
+[DEBUG] 1 command : INSERT INTO marks VALUES ('Sion', 55, TRUE);
+[DEBUG] 2 command : INSERT INTO marks VALUES  ( 'Sion' ,  55 ,  TRUE);
+[DEBUG] 1 command : INSERT INTO marks VALUES ('Rob', 35, FALSE);
+[DEBUG] 2 command : INSERT INTO marks VALUES  ( 'Rob' ,  35 ,  FALSE);
+[DEBUG] 1 command : INSERT INTO marks VALUES ('Chris', 20, FALSE);
+[DEBUG] 2 command : INSERT INTO marks VALUES  ( 'Chris' ,  20 ,  FALSE);
+<DEBUG> SELECT * FROM marks WHERE pass  ==  FALSE;
+<DEBUG> [SELECT, *, FROM, marks, WHERE, pass, ==, FALSE]
+<DEBUG> Where is in :4
+<DEBUG> WHERE Condition: [WHERE, pass, ==, FALSE]
+<DEBUG> Attribute Name: pass
+<DEBUG> Comparison Operator: ==
+<DEBUG> Value Name: FALSE
 ]]></system-out>
   </testcase>
 </testsuite>
