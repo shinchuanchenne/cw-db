@@ -29,6 +29,12 @@ public class Select {
                 .replace("==", " == ")
                 .replace("LIKE", " LIKE ");
 
+        if (command.contains("(")){
+            command = command.replaceAll("\\(", "");
+        }
+        if (command.contains(")")){
+            command = command.replaceAll("\\)", "");
+        }
 
         // 1.7 Find keyword from and where
         System.out.println("<DEBUG> " + command);
@@ -200,8 +206,18 @@ public class Select {
         return result.toString();
     }
 
-
     public static String conditionalController(BufferedReader reader, String[] word, int whereIndex) throws IOException {
+        for (int i = whereIndex + 1; i < word.length; i++) {
+            if (word[i].equalsIgnoreCase("and") || word[i].equalsIgnoreCase("or")) {
+                return multipleConditionalController(reader, word, whereIndex);
+            }
+        }
+        return singleConditionalController(reader, word, whereIndex);
+    }
+
+
+
+    public static String singleConditionalController(BufferedReader reader, String[] word, int whereIndex) throws IOException {
         StringBuilder result = new StringBuilder();
 
         System.out.println("<DEBUG> WHERE Condition: " + Arrays.toString(Arrays.copyOfRange(word, whereIndex, word.length)));
@@ -277,8 +293,104 @@ public class Select {
         return result.toString();
     }
 
-    public static boolean compareValues(String columnValue, String value, String operator) {
+    public static String multipleConditionalController(BufferedReader reader, String[] word, int whereIndex) throws IOException {
+        System.out.println("<DEBUG> MULTIPLE CONDITIONAL CONTROLLER");
 
+
+        List<Integer> operatorIndexes = new ArrayList<>();
+        List<String> operators = new ArrayList<>();
+        List<String[]> conditions = new ArrayList<>();
+
+        for (int i = whereIndex + 1; i < word.length; i++) {
+            if (word[i].toLowerCase().equals("and") || word[i].toLowerCase().equals("or")) {
+                operatorIndexes.add(i);
+                operators.add(word[i]);
+            }
+        }
+
+        System.out.println("<DEBUG> Found operators at indexes: " + operatorIndexes);
+        System.out.println("<DEBUG> Operators list: " + operators);
+
+        // 1.7.2 FIND ATTRIBUTE
+
+        int start = whereIndex + 1;
+        for (int index : operatorIndexes) {
+            String[] condition = Arrays.copyOfRange(word, start, index);
+            conditions.add(condition);
+            start = index + 1;
+        }
+        conditions.add(Arrays.copyOfRange(word, start, word.length));
+        System.out.println("<DEBUG> Conditions list: " + conditions.stream()
+                .map(Arrays::toString)
+                .toList());
+
+        //Make sure that attribute is included
+        String header = reader.readLine();
+        String[] attributeListFromTable = header.split("\t");
+        List<Integer> columnIndexes = new ArrayList<>();
+        for (String[] condition : conditions) {
+            String attributeName = condition[0];
+            int columnIndex = -1;
+
+            for (int i = 0; i < attributeListFromTable.length; i++) {
+                if (attributeListFromTable[i].equals(attributeName)) {
+                    columnIndex = i;
+                    break;
+                }
+            }
+            if (columnIndex == -1) {
+                return "[ERROR] Column " + attributeName + " not found";
+            }
+            columnIndexes.add(columnIndex);
+        }
+        System.out.println("<DEBUG> Found conditions at indexes: " + columnIndexes);
+
+        //
+        StringBuilder result = new StringBuilder().append(header).append("\n");
+        String line;
+        while ((line = reader.readLine()) != null) {
+            String[] rowValues = line.split("\t");
+            boolean[] conditionResults = new boolean[columnIndexes.size()];
+
+            for (int i = 0; i < columnIndexes.size(); i++) {
+                String[] condition = conditions.get(i);
+                String attributeName = condition[0];
+                String operator = condition[1];
+                String value = condition[2];
+
+                int columnIndex = -1;
+                for (int j = 0; j < attributeListFromTable.length; j++) {
+                    if (attributeListFromTable[j].equals(attributeName)) {
+                        columnIndex = j;
+                        break;
+                    }
+                }
+                if (columnIndex == -1) {
+                    return "[ERROR] Column " + attributeName + " not found";
+                }
+                conditionResults[i] = compareValues(rowValues[columnIndex], value, operator);
+            }
+
+
+            boolean finalResult = conditionResults[0];
+            for (int i = 0; i < operators.size(); i++) {
+                String operator = operators.get(i);
+                if (operator.equalsIgnoreCase("and")) {
+                    finalResult = finalResult && conditionResults[i + 1];
+                } else if (operator.equalsIgnoreCase("or")) {
+                    finalResult = finalResult || conditionResults[i + 1];
+                }
+            }
+            if (finalResult) {
+                result.append(line).append("\n");
+            }
+        }
+        return result.toString();
+    }
+
+
+
+    public static boolean compareValues(String columnValue, String value, String operator) {
         try {
             double columnNumber = Double.parseDouble(columnValue);
             double valueNumber = Double.parseDouble(value);

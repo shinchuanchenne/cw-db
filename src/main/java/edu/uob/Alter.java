@@ -68,7 +68,7 @@ public class Alter {
             newColumn.append(header).append("\t").append(alterAttribute).append("\n");
             String line;
             while ((line = reader.readLine()) != null) {
-                newColumn.append(line).append("\t").append("NULL").append("\n");
+                newColumn.append(line).append("\t").append("").append("\n");
             }
 
             // Write back file
