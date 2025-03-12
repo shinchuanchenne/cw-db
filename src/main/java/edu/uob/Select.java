@@ -27,7 +27,14 @@ public class Select {
                 .replace(">", " > ")
                 .replace("<", " < ")
                 .replace("==", " == ")
-                .replace("LIKE", " LIKE ");
+                .replace("LIKE", " LIKE ")
+                .replace("like", " LIKE ")
+                .replace("AND", " AND ")
+                .replace("and", " AND ")
+                .replace("OR", " OR ")
+                .replace("or", " OR ");
+        ;
+
 
         if (command.contains("(")){
             command = command.replaceAll("\\(", "");

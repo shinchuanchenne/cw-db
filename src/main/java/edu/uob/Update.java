@@ -136,10 +136,8 @@ public class Update {
 
                         // 避免 ArrayIndexOutOfBoundsException
                         if (columnIndex >= rowValues.length) {
-                            System.out.println("<ERROR> columnIndex " + columnIndex + " 超出 rowValues 長度 " + rowValues.length);
                             return "[ERROR] Invalid table format or missing values in some rows";
                         }
-
 
                         rowValues[columnIndex] = setValues.get(i);
                     }

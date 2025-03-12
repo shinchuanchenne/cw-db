@@ -71,15 +71,20 @@ public class Create {
 
         //1.5a get table name
         if (word.length == 3) {
+
             // 1.5a type: create table student;
-            String tableName = word[2].trim().replace(";","").concat(".tab");
-            File tabFile = new File("databases" + File.separator + currentDatabase + File.separator + tableName);
+            String tableName = word[2].trim().replace(";","");
 
             // Check table name is legal.
             String checktbName = ErrorHandling.plainTextCheck(tableName, "TableName");
             if (!checktbName.equals("[OK]")) {
                 return checktbName;
             }
+            tableName = tableName.concat(".tab");
+
+            File tabFile = new File("databases" + File.separator + currentDatabase + File.separator + tableName);
+            System.out.println("Table Name : " + tableName);
+
 
             // 1.5a If .tab file (table) is not exist, create a .tab
             if (!tabFile.exists()) {
