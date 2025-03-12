@@ -1,6 +1,6 @@
 edu/uob/Create.class
 edu/uob/Update.class
-edu/uob/Column.class
+edu/uob/Row.class
 edu/uob/DBClient.class
 edu/uob/Select.class
 edu/uob/Alter.class
