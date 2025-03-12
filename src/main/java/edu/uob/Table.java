@@ -62,7 +62,7 @@ public class Table {
     public List<Row> getRowsByCondition(int columnIndex, String value, String operator) {
         List<Row> result = new ArrayList<>();
         for (Row row : rows) {
-            if (Select.compareValues(row.getValue(columnIndex), value, operator)) {
+            if (LogicController.compareValues(row.getValue(columnIndex), value, operator)) {
                 result.add(row);
             }
         }

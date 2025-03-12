@@ -9,10 +9,6 @@ public class Insert {
 
 
     public static String setInsert(String command, String currentDatabase) {
-        //1.6 Check current Database is set or not.
-        if (currentDatabase == null) {
-            return "[ERROR] You must define a database first";
-        }
 
         System.out.println("[DEBUG] 1 command : " + command);
         // 1.6 Separate each command. (separate( with space.)

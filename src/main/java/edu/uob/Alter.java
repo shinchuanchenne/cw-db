@@ -12,10 +12,6 @@ ALTER TABLE table_name DROP attribute_name;
 public class Alter {
 
     public static String setAlter(String command, String currentDatabase) {
-        // Check current Database is existed or not?
-        if (currentDatabase == null) {
-            return "[ERROR] You must define a database first";
-        }
 
         // Find keyword;
         String[] word = command.trim().replace(";","").split("\\s+");

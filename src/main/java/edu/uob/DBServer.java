@@ -51,6 +51,12 @@ public class DBServer {
 
         String[] words = command.split(" ");
         String keyword = words[0].toLowerCase();
+
+        if (currentDatabase == null) {
+            if (!(keyword.equals("use") || keyword.equals("create"))) {
+                return "[ERROR] You must select a database first";
+            }
+        }
         switch (keyword) {
             case "use":
                 String result = Use.setUse(command);

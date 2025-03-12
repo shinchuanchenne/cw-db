@@ -11,11 +11,6 @@ public class Update {
 
         // UPDATE school SET name = Luis, age = 38 WHERE name == 'Chris';
 
-        //1.8 Check current Database is set or not.
-        if (currentDatabase == null) {
-            return "[ERROR] You must define a database first";
-        }
-
         // 1.8 Find keyword
         // Find set
         String[] word = command.trim().replace(";","").split("\\s+");
@@ -130,7 +125,7 @@ public class Update {
                 }
 
 
-                if (Select.compareValues(rowValues[whereColumnIndex], whereValue, whereOperator)){
+                if (LogicController.compareValues(rowValues[whereColumnIndex], whereValue, whereOperator)){
                     for (int i = 0; i < setColumnIndexes.size(); i++) {
                         int columnIndex = setColumnIndexes.get(i);
 

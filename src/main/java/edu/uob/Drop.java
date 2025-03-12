@@ -9,12 +9,6 @@ DROP TABLE table_name;
 public class Drop {
 
     public static String setDrop(String command, String currentDatabase) {
-
-        // Check current Database is existed or not?
-        if (currentDatabase == null) {
-            return "[ERROR] You must define a database first";
-        }
-
         // Find keyword;
         String[] word = command.trim().replace(";","").split("\\s+");
 

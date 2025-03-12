@@ -91,7 +91,7 @@ public class Delete {
                 String columnValue = words[columnIndex];
                 System.out.println("<DEBUG> Compare Column: " + columnValue);
 
-                if (Select.compareValues(columnValue, valueName, comparisonOperator)) {
+                if (LogicController.compareValues(columnValue, valueName, comparisonOperator)) {
                     deleted = true;
                     System.out.println("<DEBUG> Delete Column: " + line);
                     continue;

@@ -11,10 +11,6 @@ JOIN table_name_1 AND table_name_2 ON attribute_name1 AND attribute_name2
  */
 public class Join {
     public static String setJoin(String command, String currentDatabase) {
-        // Check current Database is existed or not?
-        if (currentDatabase == null) {
-            return "[ERROR] You must define a database first";
-        }
 
         // Find keyword;
         String[] word = command.trim().replace(";","").split("\\s+");
