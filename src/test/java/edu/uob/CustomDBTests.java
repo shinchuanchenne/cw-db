@@ -153,4 +153,24 @@ public class CustomDBTests {
         response = sendCommandToServer("SELECT * FROM marks");
         assertTrue(response.contains("[ERROR]"), "Missing semicolon should return an error");
     }
+
+
+    @Test
+    public void testWithSpace() {
+        sendCommandToServer("CREATE       DATABASE          testwithSpace;");
+        sendCommandToServer("USE    testwithSpace          ;");
+        sendCommandToServer("CREATE      TABLE     marks   (      name,    mark       , pass       );");
+        sendCommandToServer("INSERT INTO marks VALUES ('    Simon',       65     , TRUE     )        ;");
+        sendCommandToServer("INSERT INTO     marks VALUES ('Sion',         55      , TRUE);");
+        sendCommandToServer("INSERT INTO        marks VALUES ('Rob', 35,           FALSE);");
+        sendCommandToServer("INSERT      INTO marks      VALUES       (         'Chris', 20, FALSE    )    ;");
+
+        String response = sendCommandToServer("SELECT * FROM marks;");
+        assertTrue(response.contains("[OK]"), "SELECT * should return [OK]");
+        assertTrue(response.contains("Simon"), "Simon should be in the table");
+        assertTrue(response.contains("Chris"), "Chris should be in the table");
+        sendCommandToServer("DROP DATABASE testwithSpace;");
+        assertTrue(response.contains("[OK]"), "SELECT * should return [OK]");
+    }
+
 }
