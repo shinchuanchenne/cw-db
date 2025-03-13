@@ -27,9 +27,7 @@ public class Select {
         }
 
         // 1.7 Find keyword from and where
-        System.out.println("<DEBUG> " + command);
         String[] word = command.trim().replace(";","").split("\\s+");
-        System.out.println("<DEBUG> " + Arrays.toString((word)));
 
         for (int i = 0; i < word.length; i++) {
             word[i] = word[i].replace(",", "");
@@ -82,7 +80,6 @@ public class Select {
     public static int findWhereIndex(String[] word){
         for (int i = 0; i < word.length; i++) {
             if (word[i].toLowerCase().equals("where")) {
-                System.out.println("<DEBUG> Where is in :" + i);
                 return i;
             }
         }
@@ -153,8 +150,6 @@ public class Select {
                 word[i] = word[i].replace(",","");
             }
         }
-        //System.out.println(Arrays.toString((word)));
-
         // 1.7 Grab attributeList
         List<String> attributeList = new ArrayList<>();
         for (int i = 1; i < fromIndex; i++) {

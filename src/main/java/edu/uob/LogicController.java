@@ -46,15 +46,12 @@ public class LogicController {
     public static String singleConditionalController(BufferedReader reader, String[] word, int whereIndex) throws IOException {
         StringBuilder result = new StringBuilder();
 
-        System.out.println("<DEBUG> WHERE Condition: " + Arrays.toString(Arrays.copyOfRange(word, whereIndex, word.length)));
         // Make sure attribute Name is after whereIndex
         if (whereIndex + 1 >= word.length) {
             return "[ERROR] Invalid WHERE syntax: Missing column name";
         }
         // 1.7.2 FIND ATTRIBUTE
         String attributeName = word[whereIndex + 1];
-        System.out.println("<DEBUG> Attribute Name: " + attributeName);
-
         // Make sure comparisonOperator is after whereIndex`
         if (whereIndex + 2 >= word.length) {
             return "[ERROR] Invalid WHERE syntax: Missing comparison operator";
@@ -62,7 +59,6 @@ public class LogicController {
 
         // 1.7.2 FIND Comparison
         String comparisonOperator = word[whereIndex + 2];
-        System.out.println("<DEBUG> Comparison Operator: " + comparisonOperator);
 
         // Check comparison is valid.
         if (!(comparisonOperator.equals("==") || comparisonOperator.equals("<") || comparisonOperator.equals(">")
@@ -78,7 +74,6 @@ public class LogicController {
 
         // 1.7.3 FIND VALUES
         String valueName = word[whereIndex + 3].replace(";", "").trim();
-        System.out.println("<DEBUG> Value Name: " + valueName);
 
         // 1.7.3 Make sure that attribute is included
         String header = reader.readLine();
@@ -120,7 +115,6 @@ public class LogicController {
     }
 
     public static String multipleConditionalController(BufferedReader reader, String[] word, int whereIndex) throws IOException {
-        System.out.println("<DEBUG> MULTIPLE CONDITIONAL CONTROLLER");
 
 
         List<Integer> operatorIndexes = new ArrayList<>();
@@ -133,10 +127,6 @@ public class LogicController {
                 operators.add(word[i]);
             }
         }
-
-        System.out.println("<DEBUG> Found operators at indexes: " + operatorIndexes);
-        System.out.println("<DEBUG> Operators list: " + operators);
-
         // 1.7.2 FIND ATTRIBUTE
 
         int start = whereIndex + 1;
@@ -146,10 +136,6 @@ public class LogicController {
             start = index + 1;
         }
         conditions.add(Arrays.copyOfRange(word, start, word.length));
-        System.out.println("<DEBUG> Conditions list: " + conditions.stream()
-                .map(Arrays::toString)
-                .toList());
-
         //Make sure that attribute is included
         String header = reader.readLine();
         String[] attributeListFromTable = header.split("\t");
@@ -169,7 +155,6 @@ public class LogicController {
             }
             columnIndexes.add(columnIndex);
         }
-        System.out.println("<DEBUG> Found conditions at indexes: " + columnIndexes);
 
         //
         StringBuilder result = new StringBuilder().append(header).append("\n");

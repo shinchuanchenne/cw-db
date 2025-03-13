@@ -53,17 +53,11 @@ public class Update {
             setValues.add(columnValuePair[1].replace("\'", "").trim());
 
         }
-        System.out.println("<DEBUG> Parsed column name :" + setColumnNames);
-        System.out.println("<DEBUG> Parsed value :" + setValues);
-
 
         // Find where condition: after
         String whereColumnName = word[whereIndex + 1].trim();
-        System.out.println("<DEBUG> Where name: " + whereColumnName);
         String whereOperator = word[whereIndex + 2].trim();
-        System.out.println("<DEBUG> Where operator: " + whereOperator);
         String whereValue = word[whereIndex + 3].trim().replace(";", "");
-        System.out.println("<DEBUG> Where value: " + whereValue);
 
 
         // Open the Table file:
@@ -89,8 +83,6 @@ public class Update {
                 setColumnIndexes.add(columnIndex);
             }
 
-            System.out.println("<DEBUG> Parsed column indexes :" + setColumnIndexes);
-
             // 6 Make sure where clause 'COLUMN' is existed
             int whereColumnIndex = -1;
             for (int i = 0; i < attributeList.length; i++) {
@@ -103,8 +95,6 @@ public class Update {
             if (whereColumnIndex == -1) {
                 return "[ERROR] Column: " + whereColumnName + " not found";
             }
-            System.out.println("<DEBUG> WHERE ColumnIndex :" + whereColumnIndex);
-
 
             StringBuilder newContent = new StringBuilder();
             newContent.append(header).append("\n");  // Write header
@@ -129,7 +119,6 @@ public class Update {
                     for (int i = 0; i < setColumnIndexes.size(); i++) {
                         int columnIndex = setColumnIndexes.get(i);
 
-                        // 避免 ArrayIndexOutOfBoundsException
                         if (columnIndex >= rowValues.length) {
                             return "[ERROR] Invalid table format or missing values in some rows";
                         }
@@ -137,9 +126,6 @@ public class Update {
                         rowValues[columnIndex] = setValues.get(i);
                     }
                     updated = true;
-                    System.out.println("<DEBUG> Parsed row :" + String.join("\t", rowValues));
-                } else {
-                    System.out.println("<DEBUG> Unchanged row :" + line);
                 }
                 newContent.append(String.join("\t", rowValues)).append("\n");
             }
@@ -164,7 +150,6 @@ public class Update {
     public static int findSetIndex(String[] word){
         for (int i = 0; i < word.length; i++) {
             if (word[i].toLowerCase().equals("set")) {
-                System.out.println("<DEBUG> Set is in :" + i);
                 return i;
             }
         }

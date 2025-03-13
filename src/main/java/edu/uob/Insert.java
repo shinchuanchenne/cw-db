@@ -9,8 +9,6 @@ public class Insert {
 
 
     public static String setInsert(String command, String currentDatabase) {
-
-        System.out.println("[DEBUG] 1 command : " + command);
         // 1.6 Separate each command. (separate( with space.)
         if (command.contains("(")){
             command = command.replace("(", " ( ");
@@ -18,8 +16,6 @@ public class Insert {
         if (command.contains(",")){
             command = command.replace(",", " , ");
         }
-        System.out.println("[DEBUG] 2 command : " + command);
-
         String[] word = command.trim().split("\\s+");
 
         // 1.6 Check whether syntax is correct

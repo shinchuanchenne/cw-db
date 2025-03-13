@@ -83,8 +83,6 @@ public class Create {
             tableName = tableName.concat(".tab");
 
             File tabFile = new File("databases" + File.separator + currentDatabase + File.separator + tableName);
-            System.out.println("Table Name : " + tableName);
-
 
             // 1.5a If .tab file (table) is not exist, create a .tab
             if (!tabFile.exists()) {
